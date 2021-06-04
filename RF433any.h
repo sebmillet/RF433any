@@ -63,8 +63,8 @@
 // not in the test plan.
 
 //#define RF433ANY_DBG_SIMULATE
-//#define DBG_TRACE
-//#define DBG_TIMINGS
+//#define RF433ANY_DBG_TRACE
+//#define RF433ANY_DBG_TIMINGS
 //#define RF433ANY_DBG_TRACK
 //#define RF433ANY_DBG_RAWCODE
 //#define RF433ANY_DBG_DECODER
@@ -72,8 +72,8 @@
 
 #endif // RF433ANY_TESTPLAN
 
-#if defined(RF433ANY_DBG_SIMULATE) || defined(DBG_TRACE) \
-    || defined(DBG_TIMINGS) || defined(RF433ANY_DBG_TRACK) \
+#if defined(RF433ANY_DBG_SIMULATE) || defined(RF433ANY_DBG_TRACE) \
+    || defined(RF433ANY_DBG_TIMINGS) || defined(RF433ANY_DBG_TRACK) \
     || defined(RF433ANY_DBG_RAWCODE) || defined(RF433ANY_DBG_DECODER)
 #define DEBUG
 #endif
@@ -96,8 +96,8 @@
 
 #include <Arduino.h>
 
-#define MAX_DURATION     65535
-#define MAX_SEP_DURATION 65535
+#define RF433ANY_MAX_DURATION     65535
+#define RF433ANY_MAX_SEP_DURATION 65535
 #ifndef RF433ANY_MAX_SECTIONS
 #define RF433ANY_MAX_SECTIONS     8
 #endif
@@ -293,11 +293,11 @@ class BitVector {
 
     // IMPORTANT
     //   VALUES ARE NOT ARBITRARY.
-    //   CONVENTION_0 must be 0 and CONVENTION_1 must be 1.
+    //   RF433ANY_CONV0 must be 0 and RF433ANY_CONV1 must be 1.
     //   This is due to the decoding that uses a bit value ultimately coming
-    //   from CONVENTION_0 or CONVENTION_1.
-#define CONVENTION_0 0
-#define CONVENTION_1 1
+    //   from RF433ANY_CONV0 or RF433ANY_CONV1.
+#define RF433ANY_CONV0 0
+#define RF433ANY_CONV1 1
 
 enum class Signal {
     SHORT,
@@ -315,15 +315,15 @@ enum class Signal {
 #define RF433ANY_FD_TRN      16
 #define RF433ANY_FD_MAN      32
 
-#define DEC_ID_RAW_INCONSISTENT   0
-#define DEC_ID_START              1 // Start of enumeration of real decoders
-#define DEC_ID_RAW_SYNC           1
-#define DEC_ID_TRIBIT             2
-#define DEC_ID_TRIBIT_INV         3
-#define DEC_ID_MANCHESTER         4
-#define DEC_ID_RAW_UNKNOWN_CODING 5 // At last we use this one, that'll always
-                                    // produce a successful result.
-#define DEC_ID_END                5 // End of enumeration of real decoders
+#define RF433ANY_ID_RAW_INCONSISTENT   0
+#define RF433ANY_ID_START              1 // Start enumeration of real decoders
+#define RF433ANY_ID_RAW_SYNC           1
+#define RF433ANY_ID_TRIBIT             2
+#define RF433ANY_ID_TRIBIT_INV         3
+#define RF433ANY_ID_MANCHESTER         4
+#define RF433ANY_ID_RAW_UNKNOWN_CODING 5 // At last we use this one, that'll
+                                         // always produce a successful result.
+#define RF433ANY_ID_END                5 // End of enumeration of real decoders
 
 class Decoder {
     private:
@@ -388,10 +388,12 @@ class Decoder {
 
 class DecoderRawInconsistent: public Decoder {
     public:
-        DecoderRawInconsistent(): Decoder(CONVENTION_0) { }
+        DecoderRawInconsistent(): Decoder(RF433ANY_CONV0) { }
         ~DecoderRawInconsistent() { }
 
-        virtual byte get_id() const override { return DEC_ID_RAW_INCONSISTENT; }
+        virtual byte get_id() const override {
+            return RF433ANY_ID_RAW_INCONSISTENT;
+        }
         virtual char get_id_letter() const override { return 'I'; }
 
         virtual void add_signal_step(Signal lo, Signal hi) override { }
@@ -414,12 +416,12 @@ class DecoderRawSync: public Decoder {
 
     public:
         DecoderRawSync(byte arg_nb_low_high):
-                Decoder(CONVENTION_0),
+                Decoder(RF433ANY_CONV0),
                 nb_low_high(arg_nb_low_high),
                 sync_shape_set(false) { }
         ~DecoderRawSync() { }
 
-        virtual byte get_id() const override { return DEC_ID_RAW_SYNC; }
+        virtual byte get_id() const override { return RF433ANY_ID_RAW_SYNC; }
         virtual char get_id_letter() const override { return 'S'; }
 
         virtual void add_signal_step(Signal lo, Signal hi) override;
@@ -446,13 +448,13 @@ class DecoderRawUnknownCoding: public Decoder {
 
     public:
         DecoderRawUnknownCoding():
-                Decoder(CONVENTION_0),
+                Decoder(RF433ANY_CONV0),
                 unused_final_low(Signal::OTHER),
                 terminates_with_sep(false) { }
         ~DecoderRawUnknownCoding() { }
 
         virtual byte get_id() const override
-            { return DEC_ID_RAW_UNKNOWN_CODING; }
+            { return RF433ANY_ID_RAW_UNKNOWN_CODING; }
         virtual char get_id_letter() const override { return 'U'; }
 
         virtual void add_signal_step(Signal lo, Signal hi) override;
@@ -470,17 +472,19 @@ class DecoderRawUnknownCoding: public Decoder {
 
 class DecoderTriBit: public Decoder {
     public:
-        DecoderTriBit(byte arg_convention = CONVENTION_0)
+        DecoderTriBit(byte arg_convention = RF433ANY_CONV0)
                 :Decoder(arg_convention) {
         }
         ~DecoderTriBit() { }
 
-        virtual byte get_id() const override { return DEC_ID_TRIBIT; }
+        virtual byte get_id() const override { return RF433ANY_ID_TRIBIT; }
         virtual char get_id_letter() const override { return 'T'; }
         virtual void add_signal_step(Signal low, Signal high)
             override;
 
-        virtual bool data_got_decoded() const override { return true; }
+        virtual bool data_got_decoded() const override {
+            return pdata && pdata->get_nb_bits();
+        }
 
 #ifdef RF433ANY_DBG_DECODER
         virtual void dbg_decoder(byte disp_level, byte seq) const override;
@@ -500,19 +504,21 @@ class DecoderTriBitInv: public Decoder {
         Signal last_hi;
 
     public:
-        DecoderTriBitInv(byte arg_convention = CONVENTION_0)
+        DecoderTriBitInv(byte arg_convention = RF433ANY_CONV0)
                 :Decoder(arg_convention),
                 first_call_to_add_sgn_lo_hi(true),
                 unused_initial_low(Signal::OTHER) {
         }
         ~DecoderTriBitInv() { }
 
-        virtual byte get_id() const override { return DEC_ID_TRIBIT_INV; }
+        virtual byte get_id() const override { return RF433ANY_ID_TRIBIT_INV; }
         virtual char get_id_letter() const override { return 'N'; }
         virtual void add_signal_step(Signal low, Signal high)
             override;
 
-        virtual bool data_got_decoded() const override { return true; }
+        virtual bool data_got_decoded() const override {
+            return pdata && pdata->get_nb_bits();
+        }
 
         virtual uint16_t first_lo_ignored() const override;
 
@@ -542,15 +548,17 @@ class DecoderManchester: public Decoder {
         void consume_buf();
 
     public:
-        DecoderManchester(byte arg_convention = CONVENTION_0);
+        DecoderManchester(byte arg_convention = RF433ANY_CONV0);
         ~DecoderManchester() { }
 
-        virtual byte get_id() const override { return DEC_ID_MANCHESTER; }
+        virtual byte get_id() const override { return RF433ANY_ID_MANCHESTER; }
         virtual char get_id_letter() const override { return 'M'; }
         virtual void add_signal_step(Signal low, Signal high)
             override;
 
-        virtual bool data_got_decoded() const override { return true; }
+        virtual bool data_got_decoded() const override {
+            return pdata && pdata->get_nb_bits();
+        }
 
 #ifdef RF433ANY_DBG_DECODER
         virtual void dbg_decoder(byte disp_level, byte seq) const override;
@@ -599,7 +607,7 @@ class Track {
     private:
 
 
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
         static uint16_t ih_dbg_timings[40];
         static uint16_t ih_dbg_exec[40];
         static unsigned int ih_dbg_pos;
@@ -640,7 +648,7 @@ class Track {
 #ifdef RF433ANY_DBG_TRACK
         void track_debug() const;
 #endif
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
         void dbg_timings() const;
 #endif
 
@@ -652,7 +660,7 @@ class Track {
         void deactivate_recording();
         bool process_interrupt_timing();
         bool do_events();
-        Decoder* get_data(uint16_t filter, byte convention = CONVENTION_0);
+        Decoder* get_data(uint16_t filter, byte convention = RF433ANY_CONV0);
 };
 
 #endif // _RF433ANY_H

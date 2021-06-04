@@ -66,10 +66,10 @@ FLO/R (rolling code).
 
 * A 'sync' prefix made of a succession of low and high of the same duration.
 Note such a prefix could be regarded as Manchester encoding of as many '0' bits
-(when using CONVENTION_0, see below). The library assumes that such a sequence,
-if seen at the beginning ('short' and 'long' durations are not yet known),
-corresponds to a synchronization prefix, not to a Manchester encoding of '0'
-bits.
+(when using RF433ANY_CONV0, see below). The library assumes that such a
+sequence, if seen at the beginning ('short' and 'long' durations are not yet
+known), corresponds to a synchronization prefix, not to a Manchester encoding
+of '0' bits.
 
 The signal decoding can be done using two conventions.
 Switching from one convention to another for the same signal will simply invert
@@ -79,12 +79,12 @@ bit values.
 Bit value depending on convention
 ---------------------------------
 
-|                  | Signal shape          | CONVENTION_0 | CONVENTION_1 |
-| ---------------- | --------------------- | ------------ | ------------ |
-| Tri-bit          | low short, high long  |       0      |       1      |
-| Tri-bit          | low long, high short  |       1      |       0      |
-| Tri-bit Inverted | high short, low long  |       0      |       1      |
-| Tri-bit Inverted | high long, low short  |       1      |       0      |
-| Manchester       | low short, high short |       0      |       1      |
-| Manchester       | high short, low short |       1      |       0      |
+|                  | Signal shape          | RF433ANY_CONV0 | RF433ANY_CONV1 |
+| ---------------- | --------------------- | -------------- | -------------- |
+| Tri-bit          | low short, high long  |        0       |        1       |
+| Tri-bit          | low long, high short  |        1       |        0       |
+| Tri-bit Inverted | high short, low long  |        0       |        1       |
+| Tri-bit Inverted | high long, low short  |        1       |        0       |
+| Manchester       | low short, high short |        0       |        1       |
+| Manchester       | high short, low short |        1       |        0       |
 

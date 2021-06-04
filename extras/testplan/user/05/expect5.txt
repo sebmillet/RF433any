@@ -1,0 +1,6 @@
+Decoded: no , err: 0, code: S, rep: 1, bits:  8
+Decoded: yes, err: 0, code: T, rep: 1, bits:  9
+  Data: 01 5c
+Decoded: yes, err: 0, code: T, rep: 1, bits:  9
+  Data: 01 5c
+Decoded: no , err: 0, code: U, rep: 1, bits: 14

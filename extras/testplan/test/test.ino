@@ -98,24 +98,20 @@ void read_simulated_timings_from_usb() {
 #if RF433ANY_TESTPLAN == 5
 void output_decoder(Decoder *pdec) {
     while(pdec) {
-        int nb_bits = pdec->get_nb_bits();
-        BitVector *pdata = pdec->take_away_data();
-
         dbgf("Decoded: %s, err: %d, code: %c, "
                 "rep: %d, bits: %2d",
                 (pdec->data_got_decoded() ? "yes" : "no "),
                 pdec->get_nb_errors(), pdec->get_id_letter(),
-                pdec->get_repeats() + 1, nb_bits);
+                pdec->get_repeats() + 1, pdec->get_nb_bits());
 
         if (pdec->data_got_decoded()) {
             Serial.print("  Data: ");
-            if (pdata) {
-                char *buf = pdata->to_str();
+            if (pdec->get_pdata()) {
+                char *buf = pdec->get_pdata()->to_str();
                 if (buf) {
                     Serial.print(buf);
                     free(buf);
                 }
-                delete pdata;
             }
             Serial.print("\n");
         }
@@ -148,7 +144,7 @@ void loop() {
     }
     track.force_stop_recv();
 
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
     track.dbg_timings();
 #endif
 

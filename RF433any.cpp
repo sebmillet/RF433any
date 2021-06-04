@@ -144,7 +144,7 @@ inline void Band::breset() {
 }
 
 inline bool Band::init(uint16_t d) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("B> init: %u", d);
 #endif
 
@@ -162,11 +162,11 @@ inline bool Band::init(uint16_t d) {
 }
 
 inline bool Band::init_sep(uint16_t d) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("BSEP> init: %u", d);
 #endif
 
-    sup = MAX_SEP_DURATION;
+    sup = RF433ANY_MAX_SEP_DURATION;
     inf = d >> 1;
     inf += (inf >> 2);
     mid = d;
@@ -180,11 +180,11 @@ inline bool Band::test_value_init_if_needed(uint16_t d) {
         init(d);
     } else {
         got_it = (d >= inf && d <= sup);
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbgf("B> cmp %u to [%u, %u]", d, inf, sup);
 #endif
     }
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("B> res: %d", got_it);
 #endif
     return got_it;
@@ -193,16 +193,16 @@ inline bool Band::test_value_init_if_needed(uint16_t d) {
 inline bool Band::test_value(uint16_t d) {
     if (!mid) {
         got_it = false;
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbgf("BSEP> cmp %u to uninitialized d", d);
 #endif
     } else {
         got_it = (d >= inf && d <= sup);
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbgf("BSEP> cmp %u to [%u, %u]", d, inf, sup);
 #endif
     }
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("BSEP> res: %d", got_it);
 #endif
     return got_it;
@@ -232,7 +232,7 @@ inline void Rail::rreset_soft() {
 }
 
 inline bool Rail::rail_eat(uint16_t d) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("R> index = %d, d = %u", index, d);
 #endif
 
@@ -247,7 +247,7 @@ inline bool Rail::rail_eat(uint16_t d) {
 
     byte band_count = get_band_count();
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("R> b_short.got_it = %d, b_long.got_it = %d, "
                   "band_count = %d", b_short.got_it, b_long.got_it,
                   band_count);
@@ -287,14 +287,14 @@ inline bool Rail::rail_eat(uint16_t d) {
             assert(false);
         }
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbg("R> P0");
 #endif
 
         if ((small << 2) >= big) {
             if (pband->init(d)) {
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
                 dbg("R> P1");
 #endif
 
@@ -336,21 +336,21 @@ inline bool Rail::rail_eat(uint16_t d) {
                 // BAND_MAX_D is 30000, and multiplying .mid by 2 will produce a
                 // maximum value of 60000, that's OK for an unsigned 16-bit int.
             if (d >= (b_short.mid << 1) && d >= (b_long.mid << 1)) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
                 dbg("R> init b_sep");
 #endif
                     // We can end up with an overlap between b_sep and b_long.
                     // Not an issue.
                 b_sep.init_sep(d);
             } else {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
                 dbg("R> no init of b_sep (d too small)");
 #endif
             }
         }
         status = (b_sep.test_value(d) ? RAIL_STP_RCVD : RAIL_ERROR);
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbgf("R> rail terminated, status = %d", status);
 #endif
 
@@ -591,15 +591,15 @@ Decoder::~Decoder() {
 
 Decoder* Decoder::build_decoder(byte id, byte convention) {
     switch (id) {
-        case DEC_ID_RAW_SYNC:
+        case RF433ANY_ID_RAW_SYNC:
             return new DecoderRawSync(0);
-        case DEC_ID_TRIBIT:
+        case RF433ANY_ID_TRIBIT:
             return new DecoderTriBit(convention);
-        case DEC_ID_TRIBIT_INV:
+        case RF433ANY_ID_TRIBIT_INV:
             return new DecoderTriBitInv(convention);
-        case DEC_ID_MANCHESTER:
+        case RF433ANY_ID_MANCHESTER:
             return new DecoderManchester(convention);
-        case DEC_ID_RAW_UNKNOWN_CODING:
+        case RF433ANY_ID_RAW_UNKNOWN_CODING:
             return new DecoderRawUnknownCoding();
         default:
             assert(false);
@@ -1052,7 +1052,7 @@ unsigned int sim_int_count_svg;
 unsigned int counter;
 #endif
 
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
 uint16_t Track::ih_dbg_timings[40];
 uint16_t Track::ih_dbg_exec[40];
 unsigned int Track::ih_dbg_pos = 0;
@@ -1099,8 +1099,8 @@ void Track::ih_handle_interrupt() {
     byte r = (digitalRead(pin_number) == HIGH ? 1 : 0);
 #endif
 
-    if (d > MAX_DURATION)
-        d = MAX_DURATION;
+    if (d > RF433ANY_MAX_DURATION)
+        d = RF433ANY_MAX_DURATION;
 
     unsigned char next_IH_write_head = (IH_write_head + 1) & IH_MASK;
         // No ideal solution here: we reached the buffer size, so either we
@@ -1116,7 +1116,7 @@ void Track::ih_handle_interrupt() {
 }
 
 void Track::force_stop_recv() {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbg("T> running force_stop_recv()");
 #endif
     if (get_trk() == TRK_RECV) {
@@ -1135,7 +1135,7 @@ void Track::reset_border_mgmt() {
 
 inline void Track::track_eat(byte r, uint16_t d) {
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("T> trk = %d, r = %d, d = %u", trk, r, d);
 #endif
 
@@ -1164,14 +1164,14 @@ inline void Track::track_eat(byte r, uint16_t d) {
     prev_r = r;
 
     ++count;
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbgf("T> count = %d", count);
 #endif
 
     if (count == 1) {
         if ((d < BAND_MIN_D || d >= rawcode.max_code_d)
             && count < TRACK_MIN_BITS && !rawcode.nb_sections) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
             dbg("T> case 1");
 #endif
             treset();
@@ -1179,7 +1179,7 @@ inline void Track::track_eat(byte r, uint16_t d) {
                 //   Re-entrant call... not ideal.
             track_eat(r, d);
         } else {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
             dbg("T> case 2");
 #endif
             first_low = d;
@@ -1188,7 +1188,7 @@ inline void Track::track_eat(byte r, uint16_t d) {
     } else if (count == 2) {
         if ((d < BAND_MIN_D || d >= rawcode.max_code_d)
             && count < TRACK_MIN_BITS && !rawcode.nb_sections) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
             dbg("T> case 3");
 #endif
             treset();
@@ -1196,14 +1196,14 @@ inline void Track::track_eat(byte r, uint16_t d) {
                 //   Re-entrant call... not ideal.
             track_eat(r, d);
         } else {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
             dbg("T> case 4");
 #endif
             first_high = d;
         }
         return;
     }
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
     dbg("T> case 5");
 #endif
 
@@ -1231,7 +1231,7 @@ inline void Track::track_eat(byte r, uint16_t d) {
 
     if (r == 1 && (!b || r_low.status != RAIL_OPEN)) {
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbgf("T> b = %d", b);
 #endif
 
@@ -1333,7 +1333,7 @@ Notations:
 
         }
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
         dbgf("T> reccursec=%i, sts=%i", record_current_section, sts);
 #endif
 #if defined(RF433ANY_DBG_SIMULATE) && defined(RF433ANY_DBG_TRACK)
@@ -1347,7 +1347,7 @@ Notations:
 #endif
 
         if (record_current_section) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
             dbg("T> recording current section");
 #endif
             Section *psec = &rawcode.sections[rawcode.nb_sections++];
@@ -1387,12 +1387,12 @@ Notations:
             trk = ((rawcode.nb_sections == RF433ANY_MAX_SECTIONS)
                     ? TRK_DATA : TRK_RECV);
 
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
             dbgf("T> rawcode.nb_sections = %d", rawcode.nb_sections);
 #endif
 
             if (trk == TRK_RECV) {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
                 dbg("T> keep receiving (soft reset)");
 #endif
                 r_low.rreset_soft();
@@ -1401,7 +1401,7 @@ Notations:
                     reset_border_mgmt();
                 }
             } else {
-#ifdef DBG_TRACE
+#ifdef RF433ANY_DBG_TRACE
                 dbg("T> stop receiving (data)");
 #endif
             }
@@ -1443,14 +1443,14 @@ bool Track::process_interrupt_timing() {
         IH_read_head = (IH_read_head + 1) & IH_MASK;
 
         sei();
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
         unsigned long t0 = micros();
 #endif
         track_eat(timing.r, timing.d);
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
         unsigned long d = micros() - t0;
-        if (d > MAX_DURATION)
-            d = MAX_DURATION;
+        if (d > RF433ANY_MAX_DURATION)
+            d = RF433ANY_MAX_DURATION;
         ih_dbg_exec[ih_dbg_pos] = d;
         if (get_trk() == TRK_WAIT)
             ih_dbg_pos = 0;
@@ -1536,7 +1536,7 @@ Decoder* Track::get_data_core(byte convention) {
             }
 
         } else {
-            byte enum_decoders = DEC_ID_START;
+            byte enum_decoders = RF433ANY_ID_START;
             bool is_continuation_of_prev_section = pdec;
             do {
                 if (!pdec)
@@ -1548,7 +1548,7 @@ Decoder* Track::get_data_core(byte convention) {
                     delete pdec;
                     pdec = nullptr;
                 }
-            } while (!pdec && ++enum_decoders <= DEC_ID_END);
+            } while (!pdec && ++enum_decoders <= RF433ANY_ID_END);
 
         }
             // The last enumerated decoder is DecoderRawUnknownCoding, that
@@ -1586,7 +1586,12 @@ Decoder* Track::get_data(uint16_t filter, byte convention) {
         bool keep = true;
 
         if (filter & RF433ANY_FD_DECODED) {
-            if (!pdec->data_got_decoded())
+                // Defensive programming
+                //   Normally if data_got_decoded() is true then pdata is non
+                //   null and pdata->get_nb_bits() is non-zero.
+            if (!pdec->data_got_decoded()
+                    || !pdec->get_pdata()
+                    || !pdec->get_pdata()->get_nb_bits())
                 keep = false;
         }
 
@@ -1610,13 +1615,13 @@ Decoder* Track::get_data(uint16_t filter, byte convention) {
 
         if (filter & (RF433ANY_FD_TRI | RF433ANY_FD_TRN | RF433ANY_FD_MAN)) {
             if (!(filter & RF433ANY_FD_TRI)
-                    && pdec->get_id() == DEC_ID_TRIBIT)
+                    && pdec->get_id() == RF433ANY_ID_TRIBIT)
                 keep = false;
             if (!(filter & RF433ANY_FD_TRN)
-                    && pdec->get_id() == DEC_ID_TRIBIT_INV)
+                    && pdec->get_id() == RF433ANY_ID_TRIBIT_INV)
                 keep = false;
             if (!(filter & RF433ANY_FD_MAN)
-                    && pdec->get_id() == DEC_ID_MANCHESTER)
+                    && pdec->get_id() == RF433ANY_ID_MANCHESTER)
                 keep = false;
         }
 
@@ -1643,7 +1648,7 @@ Decoder* Track::get_data(uint16_t filter, byte convention) {
     return pdec0;
 }
 
-#ifdef DBG_TIMINGS
+#ifdef RF433ANY_DBG_TIMINGS
 void Track::dbg_timings() const {
     for (unsigned int i = 0; i + 1 < ih_dbg_pos; i += 2) {
         dbgf("%4u, %4u  |  %5u, %5u", ih_dbg_timings[i], ih_dbg_timings[i + 1],

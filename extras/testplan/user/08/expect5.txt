@@ -1,0 +1,2 @@
+Decoded: yes, err: 0, code: T, rep: 2, bits:  9
+  Data: 01 5c

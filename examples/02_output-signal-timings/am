@@ -1,0 +1,343 @@
+#!/usr/bin/bash
+
+# am
+
+# Copyright 2019, 2020, 2021 Sébastien Millet
+
+# Can perform the following:
+#   1. Compile the code
+#   2. Upload to Arduino
+#   3. Read (continually) what is arriving from the USB port the Arduino is
+#      connected to
+
+# Versions history (as of 1.3)
+# 1.3  Output from Arduino is recorded in files named with numbers instead of
+#      date-time string.
+# 1.4  Adds -t (--testplan) option, to set TESTPLAN macro
+# 1.5  -t (or --testplan) now comes with a value, so as to manage multiple test
+#      plans.
+# 1.6  Updated to work fine with Arch arduino package instead of the manually
+#      installed (from tar.gz source) package used so far.
+# 1.7  Renames archlinux-arduino back to arduino, and created corresponding
+#      symlink (was cleaner to do s).
+
+set -euo pipefail
+
+VERSION=1.7
+
+PORT=
+BOARD=
+SPEED=
+FQBN=
+BUILDDIR=
+RECORDDIR=out
+READSPEED=
+RECORDFILE=
+
+UPLOAD="no"
+VERBOSE="no"
+CATUSB="no"
+STTY="no"
+RECORDUSB="no"
+COMPILE="yes"
+TESTPLAN=
+
+DISPLAYSEP=no
+
+function finish {
+    if [ "${DISPLAYSEP}" == "yes" ]; then
+        echo "-----END ARDUINO OUTPUT-----" | tee -a "${RECORDFILE}"
+    fi
+}
+
+trap finish EXIT
+
+function usage {
+    echo "Usage:"
+    echo "  am [OPTIONS...] FILE"
+    echo "Compile FILE using arduino-builder."
+    echo "Example: am sketch.ino"
+    echo ""
+    echo "ENVIRONMENT VARIABLES"
+    echo "  If ARDUINO_USER_LIBS is defined and non empty, then arduino-builder"
+    echo "  is called with the supplementary option -libraries followed by"
+    echo "  ARDUINO_USER_LIBS' value."
+    echo ""
+    echo "OPTIONS"
+    echo "  -h --help       Display this help screen"
+    echo "  -V --version    Output version information and quit"
+    echo "  -v --verbose    Be more talkative"
+    echo "  -u --upload     Upload compiled code into Arduino"
+    echo "  -b --board      Board, either 'uno' or 'nano'"
+    echo "  -p --port       Port, for ex. '/dev/ttyUSB0'"
+    echo "  -s --speed      Upload speed, for ex. 115200"
+    echo "                  Normally, speed is infered from device type:"
+    echo "                  115200 for Uno, 57600 for Nano"
+    echo "  -B --fqbn       Board Fully Qualified Name, like 'arduino:avr:uno'"
+    echo "  -d --builddir   Build directory"
+    echo "  -c --catusb     Display (continually) what Arduino writes on USB"
+    echo "     --stty       Tune stty properly for later communication (implied"
+    echo "                  by --catusb)"
+    echo "  -r --recordusb  Write USB (continually) to a file (implies -c)"
+    echo "     --recordfile Output file if -r option is set"
+    echo "  -n --nocompile  Don't compile code"
+    echo "     --readspeed  Read speed of USB. If not specified, this script"
+    echo "                  will try to infere it from source file. If it"
+    echo "                  fails, it'll fallback to 9600."
+    echo "                  This option is useful only if USB is read"
+    echo "                  (-c or --stty option set)"
+    echo "  -t --testplan   Set TESTPLAN macro value"
+    echo "                  (as if #define TESTPLAN VALUE)"
+    exit 1
+}
+
+function version {
+    echo "am version ${VERSION}"
+    exit
+}
+
+OPTS=$(getopt -o hVvub:p:s:B:d:crnt: --long help,version,verbose,upload,board:,port:,speed:,fqbn:,builddir:,catusb,stty,recordusb,nocompile,readspeed:,recordfile:,testplan: -n 'am' -- "$@")
+
+eval set -- "$OPTS"
+
+while true; do
+  case "$1" in
+    -h | --help )       usage; shift ;;
+    -V | --version )    version; shift ;;
+    -v | --verbose )    VERBOSE="yes"; shift ;;
+    -u | --upload )     UPLOAD="yes"; shift ;;
+    -b | --board )      BOARD="$2"; shift 2 ;;
+    -p | --port )       PORT="$2"; shift 2 ;;
+    -s | --speed )      SPEED="$2"; shift 2 ;;
+    -B | --fqbn )       FQBN="$2"; shift 2 ;;
+    -d | --builddir )   BUILDDIR="$2"; shift 2 ;;
+    -c | --catusb )     CATUSB="yes"; shift ;;
+    -r | --recordusb )  RECORDUSB="yes"; CATUSB="yes"; shift ;;
+    -n | --nocompile )  COMPILE="no"; shift ;;
+         --readspeed )  READSPEED="$2"; shift 2 ;;
+         --recordfile ) RECORDFILE="$2"; shift 2 ;;
+         --stty )       STTY="yes"; shift ;;
+    -t | --testplan )   TESTPLAN="$2"; shift 2 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+FILE=${1:-}
+TRAILINGOPTS=${2:-}
+
+if [ -n "${TRAILINGOPTS}" ]; then
+    echo "Error: trailing options"
+    exit 1;
+fi
+if [ -z "${FILE}" ]; then
+    echo "Error: no input file"
+    exit 1;
+fi
+
+set +e
+
+if [ -n "${BOARD}" ]; then
+    if [ "${BOARD}" != "uno" ] && [ "${BOARD}" != "nano" ]; then
+        echo "Error: board '${BOARD}' unknown"
+        exit 1
+    fi
+fi
+
+#ARDUINODIR=$(LANG='' type -a arduino \
+#                | tail -n 1 \
+#                | sed 's/\S\+\sis\s//')
+#ARDUINODIR=$(readlink -f "${ARDUINODIR}")
+#ARDUINODIR=$(dirname "${ARDUINODIR}")
+
+ARDUINODIR=/usr/share/arduino
+
+COUNTUNO=$(compgen -G '/dev/ttyACM*' | wc -l)
+COUNTNANO=$(compgen -G '/dev/ttyUSB*' | wc -l)
+
+if [ -z "${BOARD}" ]; then
+    if [ "${COUNTUNO}" -ge 1 ] && [ "${COUNTNANO}" -ge 1 ]; then
+        echo "Error: cannot guess board, found ${COUNTUNO} uno(s), ${COUNTNANO} nano(s)"
+        exit 10
+    fi
+    if [ "${COUNTUNO}" -ge 1 ]; then
+        BOARD=uno
+    elif [ "${COUNTNANO}" -ge 1 ]; then
+        BOARD=nano
+    fi
+    if [ -z "${BOARD}" ]; then
+        echo "Error: cannot guess board, none found";
+        exit 10
+    fi
+fi
+
+if [ "${UPLOAD}" == "yes" ] || [ "${CATUSB}" == "yes" ]; then
+    if [ -z "${PORT}" ]; then
+        if [ "${BOARD}" == "uno" ]; then
+            COUNT=${COUNTUNO}
+            PORT=$(compgen -G '/dev/ttyACM*')
+        elif [ "${BOARD}" == "nano" ]; then
+            COUNT=${COUNTNANO}
+            PORT=$(compgen -G '/dev/ttyUSB*')
+        else
+            echo "FATAL #001, CHECK THIS CODE"
+            exit 99
+        fi
+
+        if [ "${COUNT}" -ge 2 ]; then
+            echo "Error: cannot guess port, more than 1 board '${BOARD}' found"
+            exit 10
+        fi
+        if [ -z "${PORT}" ]; then
+            echo "Error: cannot guess port, none found"
+            exit 10
+        fi
+    fi
+
+    if [ -z "${SPEED}" ]; then
+        if [ "${BOARD}" == "uno" ]; then
+            SPEED=115200
+        elif [ "${BOARD}" == "nano" ]; then
+            SPEED=57600
+        else
+            echo "FATAL #002, CHECK THIS CODE"
+            exit 99
+        fi
+    fi
+
+    if [ ! -e "${PORT}" ]; then
+        echo "Error: port not found"
+        exit 10
+    fi
+fi
+
+if [ -z "${FQBN}" ]; then
+    if [ "${BOARD}" == "uno" ]; then
+        FQBN="arduino:avr:uno"
+    elif [ "${BOARD}" == "nano" ]; then
+        FQBN="arduino:avr:nano:cpu=atmega328old"
+    else
+        echo "FATAL #003, CHECK THIS CODE"
+        exit 99
+    fi
+fi
+
+if [ -z "${BUILDDIR}" ]; then
+    if [[ "${FILE}"  == */* ]]; then
+        BUILDDIR=${FILE%/*}
+        BUILDDIR="${BUILDDIR%/}/build"
+    else
+        BUILDDIR=build
+    fi
+fi
+
+if [ "${RECORDUSB}" == "yes" ]; then
+    if [ -z "${RECORDFILE}" ]; then
+        V=${FILE##*/}
+        V=${V%.*}
+        V=${V:-out}
+        PREV=
+        for i in {15..00}; do
+            F="${RECORDDIR}/${V}-$i.txt"
+            if [ -e "${F}" ] && [ -n "${PREV}" ]; then
+                mv "${F}" "${PREV}"
+            fi
+            PREV="${F}"
+        done
+        RECORDFILE="${F}"
+        mkdir -p "${RECORDDIR}"
+    fi
+else
+    RECORDFILE="/dev/null"
+fi
+
+if [ "${VERBOSE}" == "yes" ]; then
+    echo "-- Settings"
+    echo "Arduino dir: ${ARDUINODIR}"
+    echo "Board:       ${BOARD}"
+    echo "Port:        ${PORT}"
+    echo "Speed:       ${SPEED}"
+    echo "Fqbn:        ${FQBN}"
+    echo "Upload:      ${UPLOAD}"
+    echo "Catusb:      ${CATUSB}"
+    echo "Recordusb:   ${RECORDUSB}"
+    echo "Record file: ${RECORDFILE}"
+    echo "Verbose:     ${VERBOSE}"
+    echo "File:        ${FILE}"
+    echo "Build dir:   ${BUILDDIR}"
+fi
+
+set -e
+
+if [ "${COMPILE}" == "yes" ]; then
+    echo "-- Compile"
+
+    mkdir -p "${BUILDDIR}"
+
+    OPT_LIB=
+    TMP_ULIB=${ARDUINO_USER_LIBS:-}
+    if [ -n "${TMP_ULIB}" ]; then
+        OPT_LIB="-libraries ""${TMP_ULIB}"""
+    fi
+
+    TESTPLAN_OPT=""
+    if [ -n "${TESTPLAN}" ]; then
+        TESTPLAN_OPT="-prefs=build.extra_flags=-DTESTPLAN=${TESTPLAN}"
+    fi
+
+    # shellcheck disable=SC2086
+    #   (We don't want to quote OPT_LIB as it can contain multiple options.)
+    "${ARDUINODIR}/arduino-builder" \
+      -hardware "${ARDUINODIR}/hardware" \
+      -tools "${ARDUINODIR}/hardware/tools/avr" \
+      -tools "${ARDUINODIR}/tools-builder" \
+      -built-in-libraries "${ARDUINODIR}/libraries" \
+      ${OPT_LIB} \
+      -fqbn "${FQBN}" \
+      -build-path "${BUILDDIR}" \
+      ${TESTPLAN_OPT} \
+      "${FILE}"
+fi
+
+FILEBASENAME=${FILE##*/}
+
+if [ "${UPLOAD}" == "yes" ]; then
+    echo "-- Upload"
+    "/usr/bin/avrdude" \
+      -q -q -patmega328p -carduino -P"${PORT}" -b"${SPEED}" -D \
+      -Uflash:w:"${BUILDDIR}/${FILEBASENAME}".hex:i
+fi
+
+if [ "${CATUSB}" == "yes" ] || [ "${STTY}" == "yes" ]; then
+    if [ -z "${READSPEED}" ]; then
+        TFILE=$(mktemp)
+        gcc -fpreprocessed -dD -x c++ -E "${FILE}" > "${TFILE}"
+        for sp in 9600 19200 28800 38400 57600 115200; do
+            if grep ${sp} "${TFILE}" > /dev/null; then
+                READSPEED=${sp}
+            fi
+        done
+        READSPEED=${READSPEED:-9600}
+        rm "${TFILE}"
+    fi
+
+    stty -F "${PORT}" -hupcl -echo "${READSPEED}"
+    echo "-- usb setup with speed ${READSPEED}"
+fi
+
+if [ "${CATUSB}" == "yes" ]; then
+    echo "-- Read usb (Ctrl-C to quit)"
+    DISPLAYSEP=yes
+    {
+        echo "speed=${READSPEED}"
+        echo "fqbn=${FQBN}"
+        echo "port=${PORT}"
+        echo "file=${FILE}"
+        echo "filedate=$(date +"%Y-%m-%dT%H:%M:%SZ" -d @$(stat -c '%Y' "${FILE}"))"
+        echo "date=$(date +'%Y-%m-%dT%H:%M:%SZ')"
+        echo ""
+        echo "-----BEGIN ARDUINO OUTPUT-----"
+    } | tee "${RECORDFILE}"
+    tee -a "${RECORDFILE}" < "${PORT}"
+fi
+
