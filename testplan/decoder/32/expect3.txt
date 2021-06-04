@@ -1,0 +1,5 @@
+[0] Unknown encoding: 48 signal bits
+    Signal: LS:SL:LS:LS:LS:SL:SL:LS:SL:SS:SL:SL:LS:LS:SL:LS:SL:SL:LS:SL:SL:LS:SL:SL:SP
+    T=UNK, E=0, I=5652, S=338, L=1044, P=10664, Y=0, Z=364
+[1] Received 24 bits: b9 4d 24
+    T=TRI, E=0, I=0, S=338, L=1044, P=10688, Y=0, Z=324

@@ -1,0 +1,6 @@
+[0] Received 32 bits: fe dc 56 78
+    T=MAN, E=0, I=5468, S=1154, L=2310, P=6716, Y=0, Z=1180
+[1] Received 32 bits: fe dc 56 78
+    T=MAN, E=0, I=0, S=1154, L=2310, P=6732, Y=0, Z=1116
+[2] Received 9 bits: 01 fd
+    T=MAN, E=0, I=0, S=1154, L=2310, P=0, Y=0, Z=1096

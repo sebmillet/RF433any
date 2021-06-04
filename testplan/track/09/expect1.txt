@@ -1,0 +1,82 @@
+[
+  {
+    "N":138,"start":0,"end":29,
+    "trk":TRK_RECV,"xorval":0x00000B97,
+    "r_low":{
+      "bits":12,"v":0x00000D1A,"railstatus":"closed","n":2,
+      "b_short":{"inf":234,"mid":624,"sup":958},
+      "b_long":{"inf":959,"mid":1292,"sup":2099},
+      "b_sep":{"inf":0,"mid":0,"sup":0}
+    },
+    "r_high":{
+      "bits":11,"v":0x0000068D,"railstatus":"stop received","n":2,
+      "b_short":{"inf":269,"mid":716,"sup":1056},
+      "b_long":{"inf":1057,"mid":1396,"sup":2268},
+      "b_sep":{"inf":15017,"mid":24028,"sup":65535}
+    }
+  }
+  {
+    "N":138,"start":0,"end":55,
+    "trk":TRK_RECV,"xorval":0x00000FFF,
+    "r_low":{
+      "bits":12,"v":0x00000AAA,"railstatus":"closed","n":2,
+      "b_short":{"inf":234,"mid":624,"sup":958},
+      "b_long":{"inf":959,"mid":1292,"sup":2099},
+      "b_sep":{"inf":0,"mid":0,"sup":0}
+    },
+    "r_high":{
+      "bits":11,"v":0x00000555,"railstatus":"stop received","n":2,
+      "b_short":{"inf":269,"mid":716,"sup":1056},
+      "b_long":{"inf":1057,"mid":1396,"sup":2268},
+      "b_sep":{"inf":15017,"mid":24028,"sup":65535}
+    }
+  }
+  {
+    "N":138,"start":0,"end":81,
+    "trk":TRK_RECV,"xorval":0x00000FFF,
+    "r_low":{
+      "bits":12,"v":0x00000AAA,"railstatus":"closed","n":2,
+      "b_short":{"inf":234,"mid":624,"sup":958},
+      "b_long":{"inf":959,"mid":1292,"sup":2099},
+      "b_sep":{"inf":0,"mid":0,"sup":0}
+    },
+    "r_high":{
+      "bits":11,"v":0x00000555,"railstatus":"stop received","n":2,
+      "b_short":{"inf":269,"mid":716,"sup":1056},
+      "b_long":{"inf":1057,"mid":1396,"sup":2268},
+      "b_sep":{"inf":15017,"mid":24028,"sup":65535}
+    }
+  }
+  {
+    "N":138,"start":0,"end":107,
+    "trk":TRK_RECV,"xorval":0x00000FFF,
+    "r_low":{
+      "bits":12,"v":0x00000AAA,"railstatus":"closed","n":2,
+      "b_short":{"inf":234,"mid":624,"sup":958},
+      "b_long":{"inf":959,"mid":1292,"sup":2099},
+      "b_sep":{"inf":0,"mid":0,"sup":0}
+    },
+    "r_high":{
+      "bits":11,"v":0x00000555,"railstatus":"stop received","n":2,
+      "b_short":{"inf":269,"mid":716,"sup":1056},
+      "b_long":{"inf":1057,"mid":1396,"sup":2268},
+      "b_sep":{"inf":15017,"mid":24028,"sup":65535}
+    }
+  }
+  {
+    "N":138,"start":0,"end":133,
+    "trk":TRK_RECV,"xorval":0x00000FFF,
+    "r_low":{
+      "bits":12,"v":0x00000AAA,"railstatus":"closed","n":2,
+      "b_short":{"inf":234,"mid":624,"sup":958},
+      "b_long":{"inf":959,"mid":1292,"sup":2099},
+      "b_sep":{"inf":0,"mid":0,"sup":0}
+    },
+    "r_high":{
+      "bits":11,"v":0x00000555,"railstatus":"stop received","n":2,
+      "b_short":{"inf":269,"mid":716,"sup":1056},
+      "b_long":{"inf":1057,"mid":1396,"sup":2268},
+      "b_sep":{"inf":15017,"mid":24028,"sup":65535}
+    }
+  }
+]

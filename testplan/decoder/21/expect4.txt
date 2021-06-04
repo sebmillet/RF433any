@@ -1,0 +1,4 @@
+[0] Sync 11
+    T=SYN, E=0, I=14924, S(lo)=348, L(lo)=348, S(hi)=364, L(hi)=364, P=3740, Y=0, Z=324
+[1] Received 55 bits: 29 3d 1c 2f 08 98 cf
+    T=TRI, E=0, I=0, S=356, L=734, P=3000, Y=0, Z=336

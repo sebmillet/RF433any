@@ -1,0 +1,18 @@
+[
+  {
+    "N":70,"start":0,"end":69,
+    "trk":TRK_RECV,"xorval":0x244048FF,
+    "r_low":{
+      "bits":32,"v":0x6D2ADA00,"railstatus":"full","n":2,
+      "b_short":{"inf":201,"mid":536,"sup":884},
+      "b_long":{"inf":885,"mid":1232,"sup":2002},
+      "b_sep":{"inf":0,"mid":0,"sup":0}
+    },
+    "r_high":{
+      "bits":31,"v":0x496A92FF,"railstatus":"stop received","n":2,
+      "b_short":{"inf":228,"mid":608,"sup":944},
+      "b_long":{"inf":945,"mid":1280,"sup":2080},
+      "b_sep":{"inf":4387,"mid":7020,"sup":65535}
+    }
+  }
+]
