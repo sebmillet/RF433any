@@ -31,7 +31,11 @@ receiver plugged on D2.
 Usage
 -----
 
-See [examples/output-signal-timings/output-signal-timings.ino](examples/output-signal-timings/output-signal-timings.ino) for an example.
+See [examples/01_output-received-code/01_output-received-code.ino](examples/01_output-received-code/01_output-received-code.ino)
+for an example.
+
+See [examples/02_output-signal-timings/02_output-signal-timings.ino](examples/02_output-signal-timings/02_output-signal-timings.ino)
+for another example.
 
 
 More details
