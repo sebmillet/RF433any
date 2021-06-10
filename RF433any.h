@@ -102,15 +102,6 @@
 #define RF433ANY_MAX_SECTIONS     8
 #endif
 
-#define ASSERT_OUTPUT_TO_SERIAL
-
-#define assert(cond) { \
-    if (!(cond)) { \
-        assert_failed(__LINE__); \
-    } \
-}
-void assert_failed(int line);
-
 
 // * **** *********************************************************************
 // * Band *********************************************************************

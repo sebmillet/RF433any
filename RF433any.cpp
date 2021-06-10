@@ -122,7 +122,15 @@ track ->  r_low  ->  b_short = manage short duration on LOW signal
 #include "RF433any.h"
 #include <Arduino.h>
 
-void assert_failed(int line) {
+#define ASSERT_OUTPUT_TO_SERIAL
+
+#define assert(cond) { \
+    if (!(cond)) { \
+        rf433any_assert_failed(__LINE__); \
+    } \
+}
+
+static void rf433any_assert_failed(int line) {
 #ifdef ASSERT_OUTPUT_TO_SERIAL
     Serial.print("\nRF433any.cpp:");
     Serial.print(line);

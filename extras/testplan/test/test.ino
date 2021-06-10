@@ -41,6 +41,24 @@ extern unsigned int sim_int_count_svg;
 bool filter_mask_set;
 uint16_t filter_mask;
 
+#define ASSERT_OUTPUT_TO_SERIAL
+
+#define assert(cond) { \
+    if (!(cond)) { \
+        assert_failed(__LINE__); \
+    } \
+}
+
+static void assert_failed(int line) {
+#ifdef ASSERT_OUTPUT_TO_SERIAL
+    Serial.print("\nRF433any.cpp:");
+    Serial.print(line);
+    Serial.println(": assertion failed, aborted.");
+#endif
+    while (1)
+        ;
+}
+
 void setup() {
     pinMode(PIN_RFINPUT, INPUT);
     Serial.begin(115200);
