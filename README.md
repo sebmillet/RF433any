@@ -52,7 +52,7 @@ for high signal, underscore for low radio signal):
 
 The decoder tries to be as flexible as possible to decode any protocols,
 without pre-knowledge about signal timings. To be generic enough, only the
-_relationships_ between timings is analyzed, to deduct the 'short' and 'long'
+_relationships_ between timings are analyzed, to deduct the 'short' and 'long'
 duration on 'low' and 'high' radio frequence signal value. No pre-defined
 timing is used.
 

@@ -105,16 +105,14 @@ void loop() {
                 pdec->get_nb_errors(), pdec->get_id_letter(),
                 pdec->get_repeats() + 1, nb_bits);
 
-        if (pdec->data_got_decoded()) {
+        if (pdata) {
             Serial.print(", data: ");
-            if (pdata) {
-                char *buf = pdata->to_str();
-                if (buf) {
-                    Serial.print(buf);
-                    free(buf);
-                }
-                delete pdata;
+            char *buf = pdata->to_str();
+            if (buf) {
+                Serial.print(buf);
+                free(buf);
             }
+            delete pdata;
         }
         Serial.print("\n");
         output_timings(pdec);
