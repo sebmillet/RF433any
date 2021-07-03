@@ -51,17 +51,19 @@ const char welcome[] PROGMEM =
     "Waiting for signal\n"
     "  Durations are in microseconds\n"
     "  Data is output in hexdecimal\n"
-    "  When high durations are equal to low, they are nul\n"
+    "  When high durations are equal to low, they are output as zero\n"
+    "  Codes: (I)nconsistent, (S)ync, (U)nknown, (T)ribit, "
+        "tribit i(N)verted, (M)anchester\n"
     "  I:  Initseq = 'high' radio signal sent once\n"
     "  LS: Low Short duration\n"
     "  LL: Low Long duration\n"
     "  HS: High Short duration\n"
     "  HL: High Long duration\n"
-    "  S: Separator = typically separating repeats\n"
+    "  S: Separator (typically separating repeats)\n"
     "  U: Low signal prefix (zero most frequently)\n"
     "  V: High signal prefix (zero most frequently)\n"
-    "  Y: First low non-coding signal, if any "
-    "(only tribit inverted)\n"
+    "  Y: First low non-coding signal "
+        "(non-zero only if encoding is tribit inverted)\n"
     "  Z: Last low signal\n";
 
 void setup() {
@@ -95,7 +97,7 @@ void loop() {
 
     Decoder *pdec0 = track.get_data(RF433ANY_FD_ALL);
     Decoder *pdec = pdec0;
-    while(pdec) {
+    while (pdec) {
         int nb_bits = pdec->get_nb_bits();
         bool got_data = pdec->data_got_decoded();
         BitVector *pdata = pdec->take_away_data();

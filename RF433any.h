@@ -43,7 +43,7 @@
 #define RF433ANY_DBG_SIMULATE
 #define RF433ANY_DBG_DECODER
 #define RF433ANY_DBG_SMALL_RECORDED
-#define RF433ANY_MAX_SECTIONS 12
+#define RF433ANY_MAX_SECTIONS 10
 
 #elif RF433ANY_TESTPLAN == 5 // RF433ANY_TESTPLAN
 
@@ -198,7 +198,6 @@ class Rail {
 
 typedef enum {
     STS_CONTINUED,
-    STS_X_SEP, // FIXME
     STS_SHORT_SEP,
     STS_LONG_SEP,
     STS_SEP_SEP,
@@ -264,6 +263,19 @@ class BitVector {
         byte nb_bits;
     public:
         BitVector();
+        BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1);
+        BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+                byte b2);
+        BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+                byte b2, byte b3);
+        BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+                byte b2, byte b3, byte b4);
+        BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+                byte b2, byte b3, byte b4, byte b5);
+
+        void prepare_BitVector_construction(short arg_nb_bits,
+                short arg_nb_bytes, short n);
+
         virtual ~BitVector();
 
         virtual void add_bit(byte v);
@@ -609,6 +621,8 @@ class Track {
         static volatile unsigned char IH_read_head;
         static byte IH_max_pending_timings;
         static bool IH_interrupt_handler_is_attached;
+        static volatile uint16_t IH_wait_free_last16;
+        static volatile short IH_wait_free_count_ok;
 
         volatile trk_t trk;
         byte count;
@@ -630,6 +644,7 @@ class Track {
         Track(int arg_pin_number, byte mood = DEFAULT_RAIL_MOOD);
 
         static void ih_handle_interrupt();
+        static void ih_handle_interrupt_wait_free();
         static byte ih_get_max_pending_timings() {
             return IH_max_pending_timings;
         }
@@ -651,6 +666,9 @@ class Track {
         void deactivate_recording();
         bool process_interrupt_timing();
         bool do_events();
+
+        void wait_free_433();
+
         Decoder* get_data(uint16_t filter, byte convention = RF433ANY_CONV0);
 };
 

@@ -28,8 +28,6 @@
 #include <Arduino.h>
 #include <stdarg.h>
 
-// What items to include in the debug lines:
-
 static char buffer[150];
 static char progmem_reading_buffer[100];
 

@@ -37,6 +37,9 @@ for an example.
 See [examples/02_output-signal-timings/02_output-signal-timings.ino](examples/02_output-signal-timings/02_output-signal-timings.ino)
 for another example.
 
+See [examples/03_react_on_code/03_react_on_code.ino](examples/03_react_on_code/03_react_on_code.ino)
+for an example with code check.
+
 
 More details
 ------------

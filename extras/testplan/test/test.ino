@@ -51,7 +51,7 @@ uint16_t filter_mask;
 
 static void assert_failed(int line) {
 #ifdef ASSERT_OUTPUT_TO_SERIAL
-    Serial.print("\nRF433any.cpp:");
+    Serial.print("\ntest.ino:");
     Serial.print(line);
     Serial.println(": assertion failed, aborted.");
 #endif
@@ -115,7 +115,7 @@ void read_simulated_timings_from_usb() {
 
 #if RF433ANY_TESTPLAN == 5
 void output_decoder(Decoder *pdec) {
-    while(pdec) {
+    while (pdec) {
         dbgf("Decoded: %s, err: %d, code: %c, "
                 "rep: %d, bits: %2d",
                 (pdec->data_got_decoded() ? "yes" : "no "),

@@ -418,7 +418,6 @@ byte Rail::get_band_count() const {
 #ifdef RF433ANY_DBG_RAWCODE
 const char *sts_names[] = {
     "CONT",
-    "XSEP",
     "SSEP",
     "LSEP",
     "2SEP",
@@ -452,6 +451,61 @@ BitVector::BitVector():
 
 }
 
+void BitVector::prepare_BitVector_construction(short arg_nb_bits,
+        short arg_nb_bytes, short n) {
+    assert(arg_nb_bits > 0);
+    assert((arg_nb_bits + 7) >> 3 == arg_nb_bytes);
+    assert(arg_nb_bytes == n);
+    array = (uint8_t*)malloc(arg_nb_bytes);
+    allocated = arg_nb_bytes;
+    nb_bits = arg_nb_bits;
+}
+
+BitVector::BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0,
+        byte b1) {
+    prepare_BitVector_construction(arg_nb_bits, arg_nb_bytes, 2);
+    array[1] = b0;
+    array[0] = b1;
+}
+
+BitVector::BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+        byte b2) {
+    prepare_BitVector_construction(arg_nb_bits, arg_nb_bytes, 3);
+    array[2] = b0;
+    array[1] = b1;
+    array[0] = b2;
+}
+
+BitVector::BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+        byte b2, byte b3) {
+    prepare_BitVector_construction(arg_nb_bits, arg_nb_bytes, 4);
+    array[3] = b0;
+    array[2] = b1;
+    array[1] = b2;
+    array[0] = b3;
+}
+
+BitVector::BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+        byte b2, byte b3, byte b4) {
+    prepare_BitVector_construction(arg_nb_bits, arg_nb_bytes, 5);
+    array[4] = b0;
+    array[3] = b1;
+    array[2] = b2;
+    array[1] = b3;
+    array[0] = b4;
+}
+
+BitVector::BitVector(short arg_nb_bits, short arg_nb_bytes, byte b0, byte b1,
+        byte b2, byte b3, byte b4, byte b5) {
+    prepare_BitVector_construction(arg_nb_bits, arg_nb_bytes, 6);
+    array[5] = b0;
+    array[4] = b1;
+    array[3] = b2;
+    array[2] = b3;
+    array[1] = b4;
+    array[0] = b5;
+}
+
 BitVector::~BitVector() {
     if (array)
         free(array);
@@ -463,6 +517,7 @@ void BitVector::add_bit(byte v) {
     if (nb_bits >= (allocated << 3)) {
         byte old_allocated = allocated;
 
+            // FIXME
         ++allocated;    // Could be another formula ('<<= 1', ...)
 
         array = (uint8_t*)realloc(array, allocated);
@@ -1003,8 +1058,6 @@ void DecoderManchester::consume_buf() {
             } else if (buf[0] == 1 && buf[1] == 0) {
                 add_data_bit(!convention);
             } else {
-                    // FIXME: créer register_error pour gérer ça de manière
-                    // cohérente entre les différents descendants de Decoder.
                 ++nb_errors;
             }
         } else {
@@ -1070,6 +1123,8 @@ volatile unsigned char Track::IH_write_head = 0;
 volatile unsigned char Track::IH_read_head = 0;
 byte Track::IH_max_pending_timings = 0;
 bool Track::IH_interrupt_handler_is_attached = false;
+volatile short Track::IH_wait_free_count_ok;
+volatile uint16_t Track::IH_wait_free_last16;
 
     // Set when Track object is created
 byte Track::pin_number = 99;
@@ -1253,10 +1308,10 @@ inline void Track::track_eat(byte r, uint16_t d) {
             sts = STS_CONTINUED;
         } else if (r_high.status == RAIL_STP_RCVD) {
             if (r_low.status == RAIL_CLOSED || r_low.status == RAIL_FULL
-                    || r_low.status == RAIL_ERROR) { // FIXME (RAIL_ERROR)
+                    || r_low.status == RAIL_ERROR) {
                 sts = (r_low.last_bit_recorded ? STS_LONG_SEP : STS_SHORT_SEP);
             } else if (r_low.status == RAIL_STP_RCVD) {
-                sts = STS_SEP_SEP; // FIXME (Need STS_X_SEP)
+                sts = STS_SEP_SEP;
             } else {
                 sts = STS_ERROR;
             }
@@ -1511,6 +1566,43 @@ bool Track::do_events() {
         return true;
     }
     return false;
+}
+
+void Track::ih_handle_interrupt_wait_free() {
+    static unsigned long last_t = 0;
+
+    const unsigned long t = micros();
+    unsigned long d = t - last_t;
+    last_t = t;
+
+    if (d > RF433ANY_MAX_DURATION)
+        d = RF433ANY_MAX_DURATION;
+
+    short new_bit = (d >= 200 && d <= 25000);
+    short old_bit = !!(IH_wait_free_last16 & 0x8000);
+    IH_wait_free_last16 <<= 1;
+    IH_wait_free_last16 |= new_bit;
+
+    IH_wait_free_count_ok += new_bit;
+    IH_wait_free_count_ok -= old_bit;
+}
+
+void Track::wait_free_433() {
+    if (IH_interrupt_handler_is_attached)
+        return;
+
+    IH_wait_free_last16 = (uint16_t)0xffff;
+    IH_wait_free_count_ok = 16;
+
+    attachInterrupt(digitalPinToInterrupt(pin_number),
+            &ih_handle_interrupt_wait_free, CHANGE);
+
+        // 75% of the last 16 durations must be in the interval [200, 25000]
+        // (that is, 12 out of 16).
+    while (IH_wait_free_count_ok >= 12)
+        ;
+
+    detachInterrupt(digitalPinToInterrupt(pin_number));
 }
 
 Decoder* Track::get_data_core(byte convention) {
