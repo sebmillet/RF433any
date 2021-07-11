@@ -45,6 +45,7 @@ void on_call(void *data) {
 void setup() {
     pinMode(PIN_RFINPUT, INPUT);
     Serial.begin(115200);
+    track.setopt_wait_free_433_before_calling_callbacks(true);
     track.register_callback(RF433ANY_ID_TRIBIT,
             new BitVector(32, 4, 0xb9, 0x35, 0x6d, 0x00),
             (void *)(&dummy + 1), on_call, 2000);
