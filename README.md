@@ -40,6 +40,10 @@ for another example.
 See [examples/03_react_on_code/03_react_on_code.ino](examples/03_react_on_code/03_react_on_code.ino)
 for an example with code check.
 
+See [examples/04_callback/04_callback.ino](examples/04_callback/04_callback.ino)
+for an example with callback functions registered to be called when specific
+codes are received.
+
 
 More details
 ------------

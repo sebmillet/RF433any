@@ -1131,7 +1131,9 @@ byte Track::pin_number = 99;
 
 Track::Track(int arg_pin_number, byte mood):
         r_low(mood),
-        r_high(mood) {
+        r_high(mood),
+        head(nullptr),
+        opt_wait_free_433_before_calling_callbacks(false) {
     pin_number = arg_pin_number;
     treset();
 }
@@ -1563,6 +1565,7 @@ bool Track::do_events() {
         dbgf("IH_max_pending_timings = %d", ih_get_max_pending_timings());
         rawcode.debug_rawcode();
 #endif
+        check_registered_callbacks();
         return true;
     }
     return false;
@@ -1746,6 +1749,84 @@ Decoder* Track::get_data(uint16_t filter, byte convention) {
     }
 
     return pdec0;
+}
+
+callback_t* Track::get_tail(const callback_t* h) {
+    const callback_t* pc = h;
+    if (pc) {
+        while (pc->next)
+            pc = pc->next;
+    }
+    return (callback_t*)pc;
+}
+
+void Track::setopt_wait_free_433_before_calling_callbacks(const bool val) {
+    opt_wait_free_433_before_calling_callbacks = val;
+}
+
+void Track::check_registered_callbacks() {
+    uint32_t t0 = millis();
+
+    bool flag_call_wait_free_433 = opt_wait_free_433_before_calling_callbacks;
+
+    Decoder *pdec0 = get_data(RF433ANY_FD_DECODED | RF433ANY_FD_DEDUP);
+    Decoder *pdec = pdec0;
+    while (pdec) {
+        const BitVector *pdata = pdec->get_pdata();
+        assert(pdata); // Must be the case (RF433ANY_FD_DECODED in the call to
+                       // get_data() above).
+
+        for (callback_t *pc = head; pc; pc = pc->next) {
+            if (pc->encoding == RF433ANY_ID_ANY_ENCODING ||
+                    pdec->get_id() == pc->encoding) {
+                if (!pdata->cmp(pc->pcode)) {
+                    if (!pc->min_delay_between_two_calls ||
+                            !pc->last_trigger ||
+                            t0 >=
+                                pc->last_trigger
+                                + pc->min_delay_between_two_calls
+                    ) {
+                        if (flag_call_wait_free_433) {
+                            wait_free_433();
+                            flag_call_wait_free_433 = false;
+                        }
+                        pc->last_trigger = t0;
+                        pc->func(pc->data);
+                    }
+                }
+            }
+        }
+
+        pdec = pdec->get_next();
+    }
+    delete pdec0;
+}
+
+void Track::register_callback(byte encoding, const BitVector *pcode, void *data,
+        void (*func)(void *data), uint32_t min_delay_between_two_calls) {
+
+    assert(encoding == RF433ANY_ID_ANY_ENCODING ||
+            encoding == RF433ANY_ID_TRIBIT ||
+            encoding == RF433ANY_ID_TRIBIT_INV ||
+            encoding == RF433ANY_ID_MANCHESTER);
+    assert(pcode);
+    assert(func);
+
+    callback_t *pc = new callback_t;
+    pc->encoding = encoding;
+    pc->pcode = pcode;
+    pc->data = data;
+    pc->func = func;
+    pc->min_delay_between_two_calls = min_delay_between_two_calls;
+    pc->last_trigger = 0;
+    pc->next = nullptr;
+
+    callback_t *tail = get_tail(head);
+    if (tail) {
+        tail->next = pc;
+    } else {
+        head = pc;
+    }
 }
 
 #ifdef RF433ANY_DBG_TIMINGS

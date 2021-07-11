@@ -328,6 +328,8 @@ enum class Signal {
                                          // always produce a successful result.
 #define RF433ANY_ID_END                5 // End of enumeration of real decoders
 
+#define RF433ANY_ID_ANY_ENCODING      99
+
 class Decoder {
     private:
         Decoder *next;
@@ -596,6 +598,17 @@ struct IH_timing_t {
     }
 };
 
+struct callback_t {
+    byte encoding;
+    const BitVector *pcode;
+    void *data;
+    void (*func)(void *data);
+    uint32_t min_delay_between_two_calls;
+    uint32_t last_trigger;
+
+    callback_t *next;
+};
+
 // NOTE - ABOUT STATIC MEMBER VARIABLES AND FUNCTIONS IN THE TRACK CLASS
 //   The class is designed so that one object is useful at a time. This comes
 //   from the fact that we attach interrupt handler to a static method (as is
@@ -608,8 +621,6 @@ struct IH_timing_t {
 typedef enum {TRK_WAIT, TRK_RECV, TRK_DATA} trk_t;
 class Track {
     private:
-
-
 #ifdef RF433ANY_DBG_TIMINGS
         static uint16_t ih_dbg_timings[40];
         static uint16_t ih_dbg_exec[40];
@@ -637,8 +648,13 @@ class Track {
 
         RawCode rawcode;
 
+        callback_t *head;
+        bool opt_wait_free_433_before_calling_callbacks;
+
         void reset_border_mgmt();
         Decoder* get_data_core(byte convention);
+
+        callback_t* get_tail(const callback_t* h);
 
     public:
         Track(int arg_pin_number, byte mood = DEFAULT_RAIL_MOOD);
@@ -670,6 +686,12 @@ class Track {
         void wait_free_433();
 
         Decoder* get_data(uint16_t filter, byte convention = RF433ANY_CONV0);
+
+        void setopt_wait_free_433_before_calling_callbacks(const bool val);
+        void register_callback(byte encoding, const BitVector *pcode,
+                void *data, void (*func)(void *data),
+                uint32_t min_delay_between_two_calls);
+        void check_registered_callbacks();
 };
 
 #endif // _RF433ANY_H

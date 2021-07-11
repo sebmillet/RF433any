@@ -28,8 +28,8 @@
 #include <Arduino.h>
 #include <stdarg.h>
 
-static char buffer[150];
-static char progmem_reading_buffer[100];
+static char buffer[120];
+static char progmem_reading_buffer[70];
 
 #ifdef __arm__
 // should use uinstd.h to define sbrk but Due causes a conflict
