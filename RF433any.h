@@ -79,13 +79,13 @@
 #endif
 
 #ifdef RF433ANY_DBG_SIMULATE
-#include "Serial.h"
+#include "RF433Serial.h"
 #define SIM_TIMINGS_LEN 140
 #endif
 
 #ifdef DEBUG
 
-#include "Debug.h"
+#include "RF433Debug.h"
 
 #else
 

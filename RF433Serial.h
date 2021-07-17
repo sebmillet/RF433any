@@ -1,4 +1,4 @@
-// Serial.h
+// RF433Serial.h
 
 /*
   Copyright 2021 Sébastien Millet
@@ -18,23 +18,23 @@
   <https://www.gnu.org/licenses>.
 */
 
-#ifndef _SERIAL_H
-#define _SERIAL_H
+#ifndef _RF433SERIAL_H
+#define _RF433SERIAL_H
 
 #include <Arduino.h>
 
-#define SERIAL_LINE_BUF_LEN 19
+#define RF433SERIAL_LINE_BUF_LEN 19
 
-class SerialLine {
+class RF433SerialLine {
     private:
-        char buf[SERIAL_LINE_BUF_LEN]; // 16-character strings (then CR+LF then
-                                       // NULL-terminating).
+        char buf[RF433SERIAL_LINE_BUF_LEN]; // 16-character strings (then CR+LF
+                                            // then NULL-terminating).
         size_t head;
         bool got_a_line;
         void reset();
 
     public:
-        SerialLine();
+        RF433SerialLine();
 
         void do_events();
         bool is_line_available();
@@ -43,6 +43,6 @@ class SerialLine {
         void split_s_into_func_args(char *s, char **func, char **args) const;
 };
 
-#endif // _SERIAL_H
+#endif // _RF433SERIAL_H
 
 // vim: ts=4:sw=4:tw=80:et

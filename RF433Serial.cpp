@@ -22,12 +22,12 @@
   <https://www.gnu.org/licenses>.
 */
 
-#include "Serial.h"
+#include "RF433Serial.h"
 #include <Arduino.h>
 
-SerialLine::SerialLine():head(0),got_a_line(false) { };
+RF433SerialLine::RF433SerialLine():head(0),got_a_line(false) { };
 
-void SerialLine::do_events() {
+void RF433SerialLine::do_events() {
     if (got_a_line)
         return;
     if (!Serial.available())
@@ -39,9 +39,10 @@ void SerialLine::do_events() {
         if (b == -1)
             break;
         buf[head++] = (char)b;
-    } while (head < SERIAL_LINE_BUF_LEN - 1 && b != '\n' && Serial.available());
+    } while (head < RF433SERIAL_LINE_BUF_LEN - 1
+             && b != '\n' && Serial.available());
 
-    if (head < SERIAL_LINE_BUF_LEN - 1 && b != '\n')
+    if (head < RF433SERIAL_LINE_BUF_LEN - 1 && b != '\n')
         return;
 
     buf[head] = '\0';
@@ -57,12 +58,12 @@ void SerialLine::do_events() {
     got_a_line = true;
 }
 
-bool SerialLine::is_line_available() {
+bool RF433SerialLine::is_line_available() {
     do_events();
     return got_a_line;
 }
 
-void SerialLine::reset() {
+void RF433SerialLine::reset() {
     head = 0;
     got_a_line = false;
 }
@@ -74,8 +75,8 @@ void SerialLine::reset() {
 // (in which case, s is not updated).
 // The terminating newline character (or 2-character CR-LF sequence) is NOT part
 // of the string given to the caller.
-// If the line length is above the buffer size (SERIAL_LINE_BUF_LEN), then it'll
-// be cut into smaller pieces.
+// If the line length is above the buffer size (RF433SERIAL_LINE_BUF_LEN), then
+// it'll be cut into smaller pieces.
 // Because of the way the received buffer is parsed, and when using CR-LF as
 // end-of-line marker (default even under Linux), it can result in a empty
 // string seen after a first string with a length close to the limit.
@@ -84,7 +85,7 @@ void SerialLine::reset() {
 // - Works fine with Unix new lines (\n), tested
 // - Supposed to work fine with Windows new lines (\r\n), NOT TESTED
 // - WON'T WORK WITH MAC-OS NEW LINES (\r)
-bool SerialLine::get_line(char *s, size_t len) {
+bool RF433SerialLine::get_line(char *s, size_t len) {
     do_events();
     if (!got_a_line)
         return false;
@@ -95,7 +96,7 @@ bool SerialLine::get_line(char *s, size_t len) {
 
 // Same as get_line, but with blocking I/O =
 // Wait without time limit, until a line comes in.
-void SerialLine::get_line_blocking(char *s, size_t len) {
+void RF433SerialLine::get_line_blocking(char *s, size_t len) {
     while (!get_line(s, len))
         ;
 }

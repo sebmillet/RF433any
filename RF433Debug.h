@@ -1,4 +1,4 @@
-// Debug.h
+// RF433Debug.h
 
 /*
   Copyright 2021 Sébastien Millet
@@ -18,8 +18,8 @@
   <https://www.gnu.org/licenses>.
 */
 
-#ifndef _DEBUG_H
-#define _DEBUG_H
+#ifndef _RF433DEBUG_H
+#define _RF433DEBUG_H
 
 #define dbg(a) \
     { static const char tmp[] PROGMEM = {a}; \
@@ -35,6 +35,6 @@ void dbgfunc(const char* file, long int line, const char *msg);
 void dbgffunc(const char* file, long int line, const char *format, ...)
      __attribute__((format(printf, 3, 4)));
 
-#endif // _DEBUG_H
+#endif // _RF433DEBUG_H
 
 // vim: ts=4:sw=4:tw=80:et

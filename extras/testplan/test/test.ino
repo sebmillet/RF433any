@@ -27,14 +27,14 @@
 #define PIN_RFINPUT  2
 
 #include "RF433any.h"
-#include "Serial.h"
+#include "RF433Serial.h"
 #include <Arduino.h>
 
 extern uint16_t sim_timings_count;
 extern unsigned int counter;
 extern unsigned int sim_int_count;
-extern char buffer[SERIAL_LINE_BUF_LEN];
-extern SerialLine sl;
+extern char buffer[RF433SERIAL_LINE_BUF_LEN];
+extern RF433SerialLine sl;
 extern uint16_t sim_timings[SIM_TIMINGS_LEN];
 extern unsigned int sim_int_count_svg;
 

@@ -1,4 +1,4 @@
-// Debug.cpp
+// RF433Debug.cpp
 
 /*
   Provides some useful functions to output debug from Arduino on the serial
@@ -24,7 +24,7 @@
   <https://www.gnu.org/licenses>.
 */
 
-#include "Debug.h"
+#include "RF433Debug.h"
 #include <Arduino.h>
 #include <stdarg.h>
 

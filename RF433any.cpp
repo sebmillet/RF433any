@@ -1101,8 +1101,8 @@ void DecoderManchester::dbg_decoder(byte disp_level, byte seq) const {
 // * ***** ********************************************************************
 
 #ifdef RF433ANY_DBG_SIMULATE
-SerialLine sl;
-char buffer[SERIAL_LINE_BUF_LEN];
+RF433SerialLine sl;
+char buffer[RF433SERIAL_LINE_BUF_LEN];
 
 uint16_t sim_timings[SIM_TIMINGS_LEN];
 
