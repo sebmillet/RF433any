@@ -1143,6 +1143,9 @@ void Track::treset() {
     rawcode.nb_sections = 0;
 }
 
+#if defined(ESP8266)
+IRAM_ATTR
+#endif
 void Track::ih_handle_interrupt() {
     static unsigned long last_t = 0;
     const unsigned long t = micros();
@@ -1571,6 +1574,9 @@ bool Track::do_events() {
     return false;
 }
 
+#if defined(ESP8266)
+IRAM_ATTR
+#endif
 void Track::ih_handle_interrupt_wait_free() {
     static unsigned long last_t = 0;
 
