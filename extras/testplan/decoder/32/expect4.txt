@@ -1,6 +1,6 @@
 [0] Received 23 bits(!): 5c 8d 24
-    T=TRI, E=1, I=5652, S=338, L=1044, P=10664, Y=0, Z=400
+    T=TRI, E=1, I=5652, S=338, L=1044, P=5652, Y=0, Z=364
 [1] Received 24 bits: b9 4d 24
-    T=TRI, E=0, I=0, S=338, L=1044, P=10688, Y=0, Z=364
+    T=TRI, E=0, I=0, S=338, L=1044, P=10688, Y=0, Z=324
 [2] Received 17 bits: 01 72 9a
     T=TRI, E=0, I=0, S=338, L=1044, P=0, Y=0, Z=328

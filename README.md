@@ -44,6 +44,8 @@ See [examples/04_callback/04_callback.ino](examples/04_callback/04_callback.ino)
 for an example with callback functions registered to be called when specific
 codes are received.
 
+Use [examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino](examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino)
+to display code characteristics in a way that is usable by the library RF433recv.
 
 More details
 ------------
@@ -98,4 +100,32 @@ Bit value depending on convention
 | Tri-bit Inverted | high long, low short  |        1       |        0       |
 | Manchester       | low short, high short |        0       |        1       |
 | Manchester       | high short, low short |        1       |        0       |
+
+
+About RF433any versus RF433recv
+-------------------------------
+
+RF433recv is found here:
+[https://github.com/sebmillet/RF433recv](https://github.com/sebmillet/RF433recv)
+
+- RF433any has no pre-defined idea of the code to analyze (nature of encoding,
+code timings, number of bits).
+
+- RF433recv works the other way round: it works with the exact code
+characteristics.
+
+**Then what is RF433recv good for?**
+
+Actually RF433any, while being 'easy and universal', consumes *a lot* of
+memory, and this can be problematic.
+
+**How to get the best of the two worlds**
+
+You can use RF433any to get the exact code characteristics and re-use it with
+RF433recv library.
+
+This is the goal of
+[examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino](examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino)
+
+You can copy-paste the output of this sketch to call RF433recv library.
 

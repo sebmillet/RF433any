@@ -694,6 +694,8 @@ void Decoder::set_ts(const uint16_t& arg_initseq, const Timings& ts) {
     tsext.high_short = ts.high_short;
     tsext.high_long = ts.high_long;
     tsext.sep = ts.sep;
+    if (arg_initseq && tsext.sep > arg_initseq)
+        tsext.sep = arg_initseq;
 }
 
 void Decoder::get_tsext(TimingsExt *p_tsext) const {
@@ -703,11 +705,11 @@ void Decoder::get_tsext(TimingsExt *p_tsext) const {
 
 void Decoder::take_into_account_first_low_high(const Section *psec,
         bool is_cont_of_prev_sec) {
+    tsext.last_low = psec->last_low;
     if (is_cont_of_prev_sec)
         return;
     tsext.first_low = psec->first_low;
     tsext.first_high = psec->first_high;
-    tsext.last_low = psec->last_low;
 
     Signal e[2];
     for (short i = 0; i < 2; ++i) {

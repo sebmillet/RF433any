@@ -1,5 +1,5 @@
 [0] Received 12 bits: 05 55
-    T=TRN, E=0, I=23908, S=666, L=1356, P=23956, Y=666, Z=636
+    T=TRN, E=0, I=23908, S=666, L=1356, P=23908, Y=666, Z=636
 [1] Received 12 bits: 05 55
     T=TRN, E=0, I=0, S=666, L=1356, P=23964, Y=666, Z=636
 [2] Received 12 bits: 05 55

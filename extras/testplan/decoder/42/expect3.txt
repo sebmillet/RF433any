@@ -1,6 +1,6 @@
 [0] Unknown encoding: 24 signal bits
     Signal: SS:LL:SS:LL:SS:SS:LL:LL:SS:LL:SS:LL:SP
-    T=UNK, E=0, I=23908, S=650, L=1348, P=23912, Y=0, Z=656
+    T=UNK, E=0, I=23908, S=650, L=1348, P=23908, Y=0, Z=656
 [1] Received 12 bits: 05 55
     T=TRN, E=0, I=0, S=650, L=1348, P=23936, Y=650, Z=664
 [2] Unknown encoding: 24 signal bits
