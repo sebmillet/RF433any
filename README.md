@@ -31,21 +31,23 @@ receiver plugged on D2.
 Usage
 -----
 
-See [examples/01_output-received-code/01_output-received-code.ino](examples/01_output-received-code/01_output-received-code.ino)
-for an example.
+See [examples/01_main/01_main.ino](examples/01_main/01_main.ino)
+for an example. This main example will output information in a way that is
+ready to be used by the RF433recv library, see below why this can be
+interesting.
 
-See [examples/02_output-signal-timings/02_output-signal-timings.ino](examples/02_output-signal-timings/02_output-signal-timings.ino)
+See [examples/02_output-received-code/02_output-received-code.ino](examples/02_output-received-code/02_output-received-code.ino)
 for another example.
 
-See [examples/03_react_on_code/03_react_on_code.ino](examples/03_react_on_code/03_react_on_code.ino)
+See [examples/03_output-signal-timings/03_output-signal-timings.ino](examples/03_output-signal-timings/03_output-signal-timings.ino)
+for another example, with detailed signal timing information.
+
+See [examples/04_react_on_code/04_react_on_code.ino](examples/04_react_on_code/04_react_on_code.ino)
 for an example with code check.
 
-See [examples/04_callback/04_callback.ino](examples/04_callback/04_callback.ino)
+See [examples/05_callback/05_callback.ino](examples/05_callback/05_callback.ino)
 for an example with callback functions registered to be called when specific
 codes are received.
-
-Use [examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino](examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino)
-to display code characteristics in a way that is usable by the library RF433recv.
 
 More details
 ------------
@@ -117,7 +119,8 @@ characteristics.
 **Then what is RF433recv good for?**
 
 Actually RF433any, while being 'easy and universal', consumes *a lot* of
-memory, and this can be problematic.
+memory, and this can be problematic. RF433recv consumes much less memory,
+allowing to do something else!
 
 **How to get the best of the two worlds**
 
@@ -125,7 +128,7 @@ You can use RF433any to get the exact code characteristics and re-use it with
 RF433recv library.
 
 This is the goal of
-[examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino](examples/05_print_code_for_RF433recv_lib/05_print_code_for_RF433recv_lib.ino)
+[examples/01_main/01_main.ino](examples/01_main/01_main.ino)
 
-You can copy-paste the output of this sketch to call RF433recv library.
+You can copy-paste the output of `01_main.ino` to call RF433recv library.
 

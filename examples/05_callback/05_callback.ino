@@ -1,4 +1,4 @@
-// 04_callback.ino
+// 05_callback.ino
 
 // Example sketch that comes along with RF433any library
 // Shows how to trigger different actions depending on code received, by
@@ -35,6 +35,9 @@ Track track(PIN_RFINPUT);
 
 byte dummy;
 
+void on_call_anycode(void *data) {
+}
+
 void on_call(void *data) {
     byte n = (byte *)data - &dummy;
     Serial.print("Received code number ");
@@ -46,11 +49,11 @@ void setup() {
     pinMode(PIN_RFINPUT, INPUT);
     Serial.begin(115200);
     track.setopt_wait_free_433_before_calling_callbacks(true);
-    track.register_callback(RF433ANY_ID_TRIBIT,
-            new BitVector(32, 4, 0xb9, 0x35, 0x6d, 0x00),
+    track.register_callback(RF433ANY_ID_TRIBIT_INV,
+            new BitVector(12, 2, 0x04, 0xf0),
             (void *)(&dummy + 1), on_call, 2000);
-    track.register_callback(RF433ANY_ID_TRIBIT,
-            new BitVector(32, 4, 0xb5, 0x35, 0x6d, 0x00),
+    track.register_callback(RF433ANY_ID_TRIBIT_INV,
+            new BitVector(12, 2, 0x04, 0xf1),
             (void *)(&dummy + 2), on_call, 2000);
 }
 

@@ -1,4 +1,4 @@
-// 02_output-signal-timings.ino
+// 03_output-signal-timings.ino
 
 // Example sketch that comes along with RF433any library
 // Displays all signals details (incl. non-coding sequences) along with their

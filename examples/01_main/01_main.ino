@@ -1,4 +1,4 @@
-// 05_print_code_for_RF433recv_lib.ino
+// 01_main.ino
 
 // Example sketch that comes along with RF433any library
 // Displays the signal shape in a way that is ready to use with the library
@@ -23,13 +23,20 @@
 */
 
 //
-// Schematic: Radio Frequencies RECEIVER plugged on D2
+// Schematic: Radio Frequencies RECEIVER plugged on D2.
+// You can change it by updating PIN_RFINPUT below.
+// Since the library RF433any uses interruptions, the pin MUST BE either 2 or 3.
 //
 
 #include "RF433any.h"
 #include <Arduino.h>
 
 #define PIN_RFINPUT  2
+
+    // Comment the below macro if you wish to output everything.
+    // As most codes are repeated, this'll likely result in the output of the
+    // same thing multiple times.
+#define OUTPUT_FIRST_DECODED_ONLY
 
 char serial_printf_buffer[100];
 void serial_printf(const char* msg, ...)
@@ -56,11 +63,22 @@ void setup() {
 Track track(PIN_RFINPUT);
 
 const char *encoding_names[] = {
-    "RFMOD_TRIBIT",
-    "RFMOD_TRIBIT_INVERTED",
-    "RFMOD_MANCHESTER",
-    "<unmanaged encoding>"
+    "RFMOD_TRIBIT",          // T
+    "RFMOD_TRIBIT_INVERTED", // N
+    "RFMOD_MANCHESTER",      // M
+    "<unmanaged encoding>"   // Anything else
 };
+
+const char *id_letter_to_encoding_name(char c) {
+    if (c == 'T')
+        return encoding_names[0];
+    else if (c == 'N')
+        return encoding_names[1];
+    else if (c == 'M')
+        return encoding_names[2];
+
+    return encoding_names[3];
+}
 
 void output_timings(Decoder *pdec, byte nb_bits) {
     TimingsExt tsext;
@@ -68,42 +86,25 @@ void output_timings(Decoder *pdec, byte nb_bits) {
         return;
     pdec->get_tsext(&tsext);
 
-    if (!tsext.initseq)
-        return;
+    const char *enc_name = id_letter_to_encoding_name(pdec->get_id_letter());
 
-//    serial_printf("         I=%u, LS=%u, LL=%u, HS=%u, HL=%u, S=%u, U=%u, "
-//            "V=%u, Y=%u, Z=%u\n", tsext.initseq, tsext.low_short,
-//            tsext.low_long, tsext.high_short, tsext.high_long, tsext.sep,
-//            tsext.first_low, tsext.first_high, tsext.first_low_ignored,
-//            tsext.last_low);
-
-    const char *enc;
-    if (pdec->get_id_letter() == 'T')
-        enc = encoding_names[0];
-    else if (pdec->get_id_letter() == 'N')
-        enc = encoding_names[1];
-    else if (pdec->get_id_letter() == 'M')
-        enc = encoding_names[2];
-    else
-        enc = encoding_names[3];
-
-    serial_printf("\n// -----CODE START-----\n");
-    serial_printf("    // [WRITE THE DEVICE NAME HERE]\n"
+    serial_printf("\n-----CODE START-----\n");
+    serial_printf("// [WRITE THE DEVICE NAME HERE]\n"
             "rf.register_Receiver(\n");
-    serial_printf("%s, // mod\n", enc);
-    serial_printf("%5u, // initseq\n", tsext.initseq);
-    serial_printf("%5u, // lo_prefix\n", tsext.first_low);
-    serial_printf("%5u, // hi_prefix\n", tsext.first_high);
-    serial_printf("%5u, // first_lo_ign\n", tsext.first_low_ignored);
-    serial_printf("%5u, // lo_short\n", tsext.low_short);
-    serial_printf("%5u, // lo_long\n", tsext.low_long);
-    serial_printf("%5u, // hi_short (0 => take lo_short)\n", tsext.high_short);
-    serial_printf("%5u, // hi_long  (0 => take lo_long)\n", tsext.high_long);
-    serial_printf("%5u, // lo_last\n", tsext.last_low);
-    serial_printf("%5u, // sep\n", tsext.sep);
-    serial_printf("%5u  // nb_bits\n", nb_bits);
+    serial_printf("\t%s, // mod\n", enc_name);
+    serial_printf("\t%u, // initseq\n", tsext.initseq);
+    serial_printf("\t%u, // lo_prefix\n", tsext.first_low);
+    serial_printf("\t%u, // hi_prefix\n", tsext.first_high);
+    serial_printf("\t%u, // first_lo_ign\n", tsext.first_low_ignored);
+    serial_printf("\t%u, // lo_short\n", tsext.low_short);
+    serial_printf("\t%u, // lo_long\n", tsext.low_long);
+    serial_printf("\t%u, // hi_short (0 => take lo_short)\n", tsext.high_short);
+    serial_printf("\t%u, // hi_long  (0 => take lo_long)\n", tsext.high_long);
+    serial_printf("\t%u, // lo_last\n", tsext.last_low);
+    serial_printf("\t%u, // sep\n", tsext.sep);
+    serial_printf("\t%u  // nb_bits\n", nb_bits);
     serial_printf(");\n");
-    serial_printf("// -----CODE END-----\n\n");
+    serial_printf("-----CODE END-----\n\n");
 }
 
 void loop() {
@@ -116,16 +117,10 @@ void loop() {
     Decoder *pdec = pdec0;
     while (pdec) {
         int nb_bits = pdec->get_nb_bits();
-        bool got_data = pdec->data_got_decoded();
         BitVector *pdata = pdec->take_away_data();
 
-        serial_printf("Decoded: %s, err: %d, code: %c, "
-                "rep: %d, bits: %2d", (got_data ? "yes" : "no "),
-                pdec->get_nb_errors(), pdec->get_id_letter(),
-                pdec->get_repeats() + 1, nb_bits);
-
         if (pdata) {
-            Serial.print(", data: ");
+            Serial.print("Data: ");
             char *buf = pdata->to_str();
             if (buf) {
                 Serial.print(buf);
@@ -135,7 +130,14 @@ void loop() {
         }
         Serial.print("\n");
         output_timings(pdec, nb_bits);
+
+#ifdef OUTPUT_FIRST_DECODED_ONLY
+        pdec = nullptr;
+        delay(1000);
+#else
         pdec = pdec->get_next();
+#endif
+
     }
     delete pdec0;
 }

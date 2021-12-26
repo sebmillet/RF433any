@@ -1,4 +1,4 @@
-// 01_output-received-code.ino
+// 02_output-received-code.ino
 
 // Example sketch that comes along with RF433any library
 // Simply displays received codes
