@@ -132,3 +132,37 @@ This is the goal of
 
 You can copy-paste the output of `01_main.ino` to call RF433recv library.
 
+
+About 'false positives'
+-----------------------
+
+Since RF433any is struggling to identify a coding sequence from any kind of
+signal, it is prone to identifying codes from what is noise.
+
+There are two ways to mitigate it:
+
+- Use get_nb_bits() (see example `01_main.ino`) and ignore any signal below a
+certain threshold. Note RF433any has a hard-coded limit of 7 bits of coding.
+
+- Use strictness of signal analyzis. That is, when creating the Track object,
+use the second parameter.
+
+Default Track construction:
+
+```c++
+    Track track(PIN_RFINPUT);
+```
+
+This is equivalent to:
+
+```c++
+    Track track(PIN_RFINPUT, RAIL_MOOD_LAXIST);
+```
+
+If you are tired of fake receptions of actually non-coding signal, you can
+instead execute:
+
+```c++
+    Track track(PIN_RFINPUT, RAIL_MOOD_STRICT);
+```
+

@@ -75,7 +75,7 @@ void setup() {
     free(buf);
 }
 
-Track track(PIN_RFINPUT);
+Track track(PIN_RFINPUT, RAIL_MOOD_STRICT);
 
 void output_timings(Decoder *pdec) {
     TimingsExt tsext;

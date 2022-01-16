@@ -576,7 +576,7 @@ class DecoderManchester: public Decoder {
 // * Track ********************************************************************
 // * ***** ********************************************************************
 
-#define TRACK_MIN_INITSEQ_DURATION 4000
+#define TRACK_MIN_INITSEQ_DURATION 2000
 #define TRACK_MIN_BITS             7
 
     // IMPORTANT
