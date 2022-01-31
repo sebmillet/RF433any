@@ -1507,12 +1507,12 @@ bool Track::process_interrupt_timing() {
 
     bool ret;
 
-    cli();
+    noInterrupts();
     if (IH_read_head != IH_write_head) {
         IH_timing_t timing = IH_timings[IH_read_head];
         IH_read_head = (IH_read_head + 1) & IH_MASK;
 
-        sei();
+        interrupts();
 #ifdef RF433ANY_DBG_TIMINGS
         unsigned long t0 = micros();
 #endif
@@ -1534,7 +1534,7 @@ bool Track::process_interrupt_timing() {
 
     } else {
 
-        sei();
+        interrupts();
         ret = false;
     }
 
