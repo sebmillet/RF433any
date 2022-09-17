@@ -141,6 +141,59 @@ static void rf433any_assert_failed(int line) {
 }
 
 
+// * ****************** *******************************************************
+// * compact, uncompact *******************************************************
+// * ****************** *******************************************************
+
+// compact() aims to represent 16-bit integers in 8-bit, to the cost of
+// precision.
+// The three sets (first one looses 4 bits, middle looses 7, last looses 12)
+// have been chosen so that smaller durations don't loose too much precision.
+// The higher the number, the more precision gets lost. This could be seen as
+// 'the floating point number representation of the (very) poor man' (or,
+// floating point numbers without... a floating point!)
+//
+// Any way, keep in mind Arduino timer produces values always multiple of 4,
+// that shifts bit-loss by 2.
+// For example, the first set (that looses 4 bits) actually really looses 2 bits
+// of precision.
+duration_t compact(uint16_t u) {
+#ifdef RF433ANY_DBG_NO_COMPACT_DURATIONS
+        // compact not activated -> compact() is a no-op
+    return u;
+#else
+    if (u < 2048) {
+        return u >> 4;
+    }
+    if (u < 17408) {
+        return 128 + ((u - 2048) >> 7);
+    }
+    if (u < 46080)
+        return 248 + ((u - 17408) >> 12);
+    return 255;
+#endif
+}
+
+// uncompact() is the opposite of compact(), yes!
+// Left here in case tests are needed (it is not used in release code).
+uint16_t uncompact(duration_t b) {
+#ifdef RF433ANY_DBG_NO_COMPACT_DURATIONS
+        // compact not activated -> uncompact() is a no-op
+    return b;
+#else
+    uint16_t u = b;
+    if (u < 128) {
+        return u << 4;
+    }
+    u &= 0x7f;
+    if (u < 120) {
+        return (u << 7) + 2048;
+    }
+    return ((u - 120) << 12) + 17408;
+#endif
+}
+
+
 // * **** *********************************************************************
 // * Band *********************************************************************
 // * **** *********************************************************************
@@ -1106,7 +1159,7 @@ void DecoderManchester::dbg_decoder(byte disp_level, byte seq) const {
 RF433SerialLine sl;
 char buffer[RF433SERIAL_LINE_BUF_LEN];
 
-uint16_t sim_timings[SIM_TIMINGS_LEN];
+duration_t sim_timings[SIM_TIMINGS_LEN];
 
 uint16_t sim_timings_count = 0;
 
@@ -1159,7 +1212,7 @@ void Track::ih_handle_interrupt() {
         d = 100;
         sim_int_count = sim_timings_count + 1;
     } else {
-        d = sim_timings[sim_int_count++];
+        d = uncompact(sim_timings[sim_int_count++]);
     }
     (void)last_t;
     (void)t;

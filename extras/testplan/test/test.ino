@@ -35,7 +35,7 @@ extern unsigned int counter;
 extern unsigned int sim_int_count;
 extern char buffer[RF433SERIAL_LINE_BUF_LEN];
 extern RF433SerialLine sl;
-extern uint16_t sim_timings[SIM_TIMINGS_LEN];
+extern duration_t sim_timings[SIM_TIMINGS_LEN];
 extern unsigned int sim_int_count_svg;
 
 bool filter_mask_set;
@@ -103,12 +103,12 @@ void read_simulated_timings_from_usb() {
             filter_mask_set = true;
             filter_mask = l;
         } else {
-            sim_timings[sim_timings_count++] = l;
-            sim_timings[sim_timings_count++] = h;
+            sim_timings[sim_timings_count++] = compact(l);
+            sim_timings[sim_timings_count++] = compact(h);
         }
 #else
-        sim_timings[sim_timings_count++] = l;
-        sim_timings[sim_timings_count++] = h;
+        sim_timings[sim_timings_count++] = compact(l);
+        sim_timings[sim_timings_count++] = compact(h);
 #endif
     }
 }

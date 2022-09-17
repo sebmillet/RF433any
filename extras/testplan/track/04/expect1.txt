@@ -4,15 +4,15 @@
     "trk":TRK_RECV,"xorval":0x00000000,
     "r_low":{
       "bits":8,"v":0x00000000,"railstatus":"closed","n":1,
-      "b_short":{"inf":186,"mid":248,"sup":310},
-      "b_long":{"inf":186,"mid":248,"sup":310},
+      "b_short":{"inf":180,"mid":240,"sup":300},
+      "b_long":{"inf":180,"mid":240,"sup":300},
       "b_sep":{"inf":0,"mid":0,"sup":0}
     },
     "r_high":{
       "bits":7,"v":0x00000000,"railstatus":"stop received","n":1,
       "b_short":{"inf":372,"mid":496,"sup":620},
       "b_long":{"inf":372,"mid":496,"sup":620},
-      "b_sep":{"inf":2417,"mid":3868,"sup":65535}
+      "b_sep":{"inf":2400,"mid":3840,"sup":65535}
     }
   }
 ,
@@ -21,15 +21,15 @@
     "trk":TRK_RECV,"xorval":0x00000008,
     "r_low":{
       "bits":7,"v":0x00000008,"railstatus":"stop received","n":2,
-      "b_short":{"inf":93,"mid":248,"sup":324},
-      "b_long":{"inf":325,"mid":400,"sup":650},
-      "b_sep":{"inf":587,"mid":940,"sup":65535}
+      "b_short":{"inf":90,"mid":240,"sup":320},
+      "b_long":{"inf":321,"mid":400,"sup":650},
+      "b_sep":{"inf":580,"mid":928,"sup":65535}
     },
     "r_high":{
       "bits":7,"v":0x00000000,"railstatus":"stop received","n":1,
       "b_short":{"inf":372,"mid":496,"sup":620},
       "b_long":{"inf":372,"mid":496,"sup":620},
-      "b_sep":{"inf":2417,"mid":3868,"sup":65535}
+      "b_sep":{"inf":2400,"mid":3840,"sup":65535}
     }
   }
 ,
@@ -38,9 +38,9 @@
     "trk":TRK_RECV,"xorval":0x0000000E,
     "r_low":{
       "bits":7,"v":0x0000000E,"railstatus":"stop received","n":2,
-      "b_short":{"inf":93,"mid":248,"sup":324},
-      "b_long":{"inf":325,"mid":400,"sup":650},
-      "b_sep":{"inf":587,"mid":940,"sup":65535}
+      "b_short":{"inf":90,"mid":240,"sup":320},
+      "b_long":{"inf":321,"mid":400,"sup":650},
+      "b_sep":{"inf":580,"mid":928,"sup":65535}
     },
     "r_high":{
       "bits":7,"v":0x00000000,"railstatus":"error","n":1,
@@ -55,9 +55,9 @@
     "trk":TRK_RECV,"xorval":0x00000002,
     "r_low":{
       "bits":7,"v":0x00000002,"railstatus":"stop received","n":2,
-      "b_short":{"inf":93,"mid":248,"sup":324},
-      "b_long":{"inf":325,"mid":400,"sup":650},
-      "b_sep":{"inf":562,"mid":900,"sup":65535}
+      "b_short":{"inf":90,"mid":240,"sup":320},
+      "b_long":{"inf":321,"mid":400,"sup":650},
+      "b_sep":{"inf":560,"mid":896,"sup":65535}
     },
     "r_high":{
       "bits":8,"v":0x00000000,"railstatus":"closed","n":1,
@@ -72,8 +72,8 @@
     "trk":TRK_RECV,"xorval":0x00000001,
     "r_low":{
       "bits":7,"v":0x00000000,"railstatus":"stop received","n":1,
-      "b_short":{"inf":186,"mid":248,"sup":310},
-      "b_long":{"inf":186,"mid":248,"sup":310},
+      "b_short":{"inf":180,"mid":240,"sup":300},
+      "b_long":{"inf":180,"mid":240,"sup":300},
       "b_sep":{"inf":1250,"mid":2000,"sup":65535}
     },
     "r_high":{

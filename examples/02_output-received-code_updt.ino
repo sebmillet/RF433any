@@ -38,6 +38,28 @@ void setup() {
 
 Track track(PIN_RFINPUT);
 
+// NOTE
+//   One could also create a child class, it is cleaner, but I find it overkill
+char* my_BitVector_to_str(const BitVector *bv) {
+    if (!bv->get_nb_bits())
+        return nullptr;
+
+    byte nb_bytes = bv->get_nb_bytes();
+
+    char *ret = (char*)malloc(nb_bytes * 3);
+    char tmp[3];
+    int j = 0;
+    for (int i = nb_bytes - 1; i >= 0 ; --i) {
+        snprintf(tmp, sizeof(tmp), "%02X", bv->get_nth_byte(i));
+        ret[j] = tmp[0];
+        ret[j + 1] = tmp[1];
+        ret[j + 2] = (i > 0 ? ' ' : '\0');
+        j += 3;
+    }
+
+    return ret;
+}
+
 void loop() {
     track.treset();
 
@@ -53,14 +75,9 @@ void loop() {
         Serial.print(" bits (x");
         Serial.print(pdec->get_repeats() + 1);
         Serial.print("): ");
-        char *buf = pdec->get_pdata()->to_str();
-            // DEFENSIVE PROGRAMMING
-            //   The option RF433ANY_FD_DECODED above guarantees there's always
-            //   something decoded. Test done though, just in case.
-        if (buf) {
-            Serial.println(buf);
-            free(buf);
-        }
+        char *buf = my_BitVector_to_str(pdec->get_pdata());
+        Serial.println(buf);
+        free(buf);
     }
     delete pdec0;
 }

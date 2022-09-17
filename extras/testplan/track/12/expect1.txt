@@ -4,15 +4,15 @@
     "trk":TRK_RECV,"xorval":0x00001407,
     "r_low":{
       "bits":25,"v":0x008004B2,"railstatus":"closed","n":2,
-      "b_short":{"inf":476,"mid":1268,"sup":1904},
-      "b_long":{"inf":1905,"mid":2540,"sup":4127},
+      "b_short":{"inf":474,"mid":1264,"sup":1848},
+      "b_long":{"inf":1849,"mid":2432,"sup":3952},
       "b_sep":{"inf":0,"mid":0,"sup":0}
     },
     "r_high":{
       "bits":24,"v":0x008010B5,"railstatus":"stop received","n":2,
-      "b_short":{"inf":452,"mid":1204,"sup":1820},
-      "b_long":{"inf":1821,"mid":2436,"sup":3958},
-      "b_sep":{"inf":3315,"mid":5304,"sup":65535}
+      "b_short":{"inf":450,"mid":1200,"sup":1816},
+      "b_long":{"inf":1817,"mid":2432,"sup":3952},
+      "b_sep":{"inf":3280,"mid":5248,"sup":65535}
     }
   }
   {
@@ -20,15 +20,15 @@
     "trk":TRK_RECV,"xorval":0x00001407,
     "r_low":{
       "bits":26,"v":0x010004B2,"railstatus":"closed","n":2,
-      "b_short":{"inf":476,"mid":1268,"sup":1904},
-      "b_long":{"inf":1905,"mid":2540,"sup":4127},
+      "b_short":{"inf":474,"mid":1264,"sup":1848},
+      "b_long":{"inf":1849,"mid":2432,"sup":3952},
       "b_sep":{"inf":0,"mid":0,"sup":0}
     },
     "r_high":{
       "bits":25,"v":0x010010B5,"railstatus":"stop received","n":2,
-      "b_short":{"inf":452,"mid":1204,"sup":1820},
-      "b_long":{"inf":1821,"mid":2436,"sup":3958},
-      "b_sep":{"inf":3315,"mid":5304,"sup":65535}
+      "b_short":{"inf":450,"mid":1200,"sup":1816},
+      "b_long":{"inf":1817,"mid":2432,"sup":3952},
+      "b_sep":{"inf":3280,"mid":5248,"sup":65535}
     }
   }
 ]

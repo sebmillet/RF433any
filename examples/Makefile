@@ -4,7 +4,7 @@
 
 source = $(wildcard *.ino)
 target = build/$(source).with_bootloader.hex
-opt = -t 1
+opt =
 
 ALL: $(target)
 

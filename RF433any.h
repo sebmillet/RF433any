@@ -96,6 +96,18 @@
 
 #include <Arduino.h>
 
+    // Don't uncomment the below unless you know what you are doing!
+//#define RF433ANY_DBG_NO_COMPACT_DURATIONS
+
+#ifdef RF433ANY_DBG_NO_COMPACT_DURATIONS
+#define duration_t uint16_t
+#else
+#define duration_t byte
+#endif
+
+duration_t compact(uint16_t u);
+uint16_t uncompact(duration_t b);
+
 #define RF433ANY_MAX_DURATION     65535
 #define RF433ANY_MAX_SEP_DURATION 65535
 #ifndef RF433ANY_MAX_SECTIONS

@@ -1,6 +1,6 @@
 IH_max_pending_timings = 2
-> nb_sections = 1, initseq = 9604
+> nb_sections = 1, initseq = 9600
   00  SSEP
-      sep = 7020
+      sep = 6912
       low:  [2] n = 32, v = 0x6D2ADA00
       high: [2] n = 31, v = 0x496A92FF

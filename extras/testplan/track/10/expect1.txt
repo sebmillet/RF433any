@@ -4,15 +4,15 @@
     "trk":TRK_RECV,"xorval":0x00000000,
     "r_low":{
       "bits":11,"v":0x00000000,"railstatus":"closed","n":1,
-      "b_short":{"inf":222,"mid":296,"sup":370},
-      "b_long":{"inf":222,"mid":296,"sup":370},
+      "b_short":{"inf":216,"mid":288,"sup":360},
+      "b_long":{"inf":216,"mid":288,"sup":360},
       "b_sep":{"inf":0,"mid":0,"sup":0}
     },
     "r_high":{
       "bits":10,"v":0x00000000,"railstatus":"stop received","n":1,
-      "b_short":{"inf":315,"mid":420,"sup":525},
-      "b_long":{"inf":315,"mid":420,"sup":525},
-      "b_sep":{"inf":2352,"mid":3764,"sup":65535}
+      "b_short":{"inf":312,"mid":416,"sup":520},
+      "b_long":{"inf":312,"mid":416,"sup":520},
+      "b_sep":{"inf":2320,"mid":3712,"sup":65535}
     }
   }
   {
@@ -20,15 +20,15 @@
     "trk":TRK_RECV,"xorval":0xFFFFFFFF,
     "r_low":{
       "bits":32,"v":0xB251EC9E,"railstatus":"full","n":2,
-      "b_short":{"inf":111,"mid":296,"sup":486},
-      "b_long":{"inf":487,"mid":676,"sup":1098},
+      "b_short":{"inf":108,"mid":288,"sup":480},
+      "b_long":{"inf":481,"mid":672,"sup":1092},
       "b_sep":{"inf":0,"mid":0,"sup":0}
     },
     "r_high":{
       "bits":32,"v":0x4DAE1361,"railstatus":"full","n":2,
-      "b_short":{"inf":158,"mid":420,"sup":604},
-      "b_long":{"inf":605,"mid":788,"sup":1280},
-      "b_sep":{"inf":2352,"mid":3764,"sup":65535}
+      "b_short":{"inf":156,"mid":416,"sup":600},
+      "b_long":{"inf":601,"mid":784,"sup":1274},
+      "b_sep":{"inf":2320,"mid":3712,"sup":65535}
     }
   }
   {
@@ -36,15 +36,15 @@
     "trk":TRK_RECV,"xorval":0x007FFFFF,
     "r_low":{
       "bits":23,"v":0x0011319F,"railstatus":"error","n":2,
-      "b_short":{"inf":111,"mid":296,"sup":486},
-      "b_long":{"inf":487,"mid":676,"sup":1098},
+      "b_short":{"inf":108,"mid":288,"sup":480},
+      "b_long":{"inf":481,"mid":672,"sup":1092},
       "b_sep":{"inf":0,"mid":0,"sup":0}
     },
     "r_high":{
       "bits":23,"v":0x006ECE60,"railstatus":"error","n":2,
-      "b_short":{"inf":158,"mid":420,"sup":604},
-      "b_long":{"inf":605,"mid":788,"sup":1280},
-      "b_sep":{"inf":2352,"mid":3764,"sup":65535}
+      "b_short":{"inf":156,"mid":416,"sup":600},
+      "b_long":{"inf":601,"mid":784,"sup":1274},
+      "b_sep":{"inf":2320,"mid":3712,"sup":65535}
     }
   }
 ]

@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-# am
+# am2
 
-# Copyright 2019, 2020, 2021 Sébastien Millet
+# Copyright 2019, 2020, 2021, 2022 Sébastien Millet
 
 # Can perform the following:
 #   1. Compile the code
@@ -20,10 +20,12 @@
 #      installed (from tar.gz source) package used so far.
 # 1.7  Renames archlinux-arduino back to arduino, and created corresponding
 #      symlink (was cleaner to do s).
+# 2.0  Replaces arduino-builder with arduino-cli
+# 2.1  Output warning if ARDUINO_USER_LIBS environment variable is not set
 
 set -euo pipefail
 
-VERSION=1.7
+VERSION=2.1
 
 PORT=
 BOARD=
@@ -41,6 +43,7 @@ STTY="no"
 RECORDUSB="no"
 COMPILE="yes"
 TESTPLAN=
+NOCOLOR=
 
 DISPLAYSEP=no
 
@@ -88,6 +91,7 @@ function usage {
     echo "                  (-c or --stty option set)"
     echo "  -t --testplan   Set TESTPLAN macro value"
     echo "                  (as if #define TESTPLAN VALUE)"
+    echo "     --no-color   Pass on the --no-color option to arduino-cli"
     exit 1
 }
 
@@ -96,7 +100,7 @@ function version {
     exit
 }
 
-OPTS=$(getopt -o hVvub:p:s:B:d:crnt: --long help,version,verbose,upload,board:,port:,speed:,fqbn:,builddir:,catusb,stty,recordusb,nocompile,readspeed:,recordfile:,testplan: -n 'am' -- "$@")
+OPTS=$(getopt -o hVvub:p:s:B:d:crnt: --long help,version,verbose,upload,board:,port:,speed:,fqbn:,builddir:,catusb,stty,no-color,recordusb,nocompile,readspeed:,recordfile:,testplan: -n 'am' -- "$@")
 
 eval set -- "$OPTS"
 
@@ -117,6 +121,7 @@ while true; do
          --readspeed )  READSPEED="$2"; shift 2 ;;
          --recordfile ) RECORDFILE="$2"; shift 2 ;;
          --stty )       STTY="yes"; shift ;;
+         --no-color )   NOCOLOR="--no-color"; shift ;;
     -t | --testplan )   TESTPLAN="$2"; shift 2 ;;
     -- ) shift; break ;;
     * ) break ;;
@@ -143,12 +148,6 @@ if [ -n "${BOARD}" ]; then
         exit 1
     fi
 fi
-
-#ARDUINODIR=$(LANG='' type -a arduino \
-#                | tail -n 1 \
-#                | sed 's/\S\+\sis\s//')
-#ARDUINODIR=$(readlink -f "${ARDUINODIR}")
-#ARDUINODIR=$(dirname "${ARDUINODIR}")
 
 ARDUINODIR=/usr/share/arduino
 
@@ -277,35 +276,31 @@ if [ "${COMPILE}" == "yes" ]; then
     OPT_LIB=
     TMP_ULIB=${ARDUINO_USER_LIBS:-}
     if [ -n "${TMP_ULIB}" ]; then
-        OPT_LIB="-libraries ""${TMP_ULIB}"""
+        OPT_LIB="--libraries ""${TMP_ULIB}"""
+    else
+        echo
+        echo "***********************************************************"
+        echo "* WARNING                                                 *"
+        echo "*   The environment variable ARDUINO_USER_LIBS is not set *"
+        echo "***********************************************************"
+        echo
     fi
 
     TESTPLAN_OPT=""
     if [ -n "${TESTPLAN}" ]; then
-        TESTPLAN_OPT="-prefs=build.extra_flags=-DTESTPLAN=${TESTPLAN}"
+        TESTPLAN_OPT="--build-property build.extra_flags=-DRF433ANY_TESTPLAN=${TESTPLAN}"
     fi
 
     # shellcheck disable=SC2086
     #   (We don't want to quote OPT_LIB as it can contain multiple options.)
-    "${ARDUINODIR}/arduino-builder" \
-      -hardware "${ARDUINODIR}/hardware" \
-      -tools "${ARDUINODIR}/hardware/tools/avr" \
-      -tools "${ARDUINODIR}/tools-builder" \
-      -built-in-libraries "${ARDUINODIR}/libraries" \
-      ${OPT_LIB} \
-      -fqbn "${FQBN}" \
-      -build-path "${BUILDDIR}" \
-      ${TESTPLAN_OPT} \
-      "${FILE}"
+    arduino-cli compile -b "${FQBN}" ${NOCOLOR} --build-path "${BUILDDIR}" ${OPT_LIB} ${TESTPLAN_OPT} "${FILE}"
 fi
 
 FILEBASENAME=${FILE##*/}
 
 if [ "${UPLOAD}" == "yes" ]; then
     echo "-- Upload"
-    "/usr/bin/avrdude" \
-      -q -q -patmega328p -carduino -P"${PORT}" -b"${SPEED}" -D \
-      -Uflash:w:"${BUILDDIR}/${FILEBASENAME}".hex:i
+    arduino-cli upload -v -b "${FQBN}" --input-dir "${BUILDDIR}"  -p "${PORT}"
 fi
 
 if [ "${CATUSB}" == "yes" ] || [ "${STTY}" == "yes" ]; then
