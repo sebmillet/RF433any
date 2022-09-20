@@ -1,6 +1,6 @@
 [0] Received 32 bits: 8e dc 56 7f
-    T=MAN, E=0, I=5568, S=1154, L=2314, P=5568, Y=0, Z=1100
+    T=MAN, E=0, I=5504, S=1144, L=2240, P=5504, Y=0, Z=1088
 [1] Received 32 bits: 8e dc 56 7f
-    T=MAN, E=0, I=0, S=1154, L=2314, P=5584, Y=0, Z=1080
+    T=MAN, E=0, I=0, S=1144, L=2240, P=5504, Y=0, Z=1072
 [2] Received 11 bits: 04 76
-    T=MAN, E=0, I=0, S=1154, L=2314, P=0, Y=0, Z=2244
+    T=MAN, E=0, I=0, S=1144, L=2240, P=0, Y=0, Z=2176

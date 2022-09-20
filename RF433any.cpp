@@ -350,6 +350,8 @@ inline bool Rail::rail_eat(uint16_t d) {
 
 #ifdef RF433ANY_DBG_TRACE
         dbg("R> P0");
+        dbgf("R> small = %lu, small * 4 = %lu, big = %lu",
+                small, small << 2, big);
 #endif
 
         if ((small << 2) >= big) {

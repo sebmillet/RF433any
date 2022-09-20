@@ -1,22 +1,18 @@
 IH_max_pending_timings = 3
-> nb_sections = 5, initseq = 8448
+> nb_sections = 4, initseq = 8448
   00  SSEP
       sep = 21504
       low:  [2] n = 12, v = 0x00000D1A
       high: [2] n = 11, v = 0x0000068D
   01  SSEP
       sep = 21504
-      low:  [2] n = 12, v = 0x00000AAA
-      high: [2] n = 11, v = 0x00000555
+      low:  [2] n = 10, v = 0x000002AA
+      high: [2] n =  9, v = 0x00000155
   02  SSEP
       sep = 21504
-      low:  [2] n = 12, v = 0x00000AAA
-      high: [2] n = 11, v = 0x00000555
+      low:  [2] n = 10, v = 0x000002AA
+      high: [2] n =  9, v = 0x00000155
   03  SSEP
       sep = 21504
-      low:  [2] n = 12, v = 0x00000AAA
-      high: [2] n = 11, v = 0x00000555
-  04  SSEP
-      sep = 21504
-      low:  [2] n = 12, v = 0x00000AAA
-      high: [2] n = 11, v = 0x00000555
+      low:  [2] n =  8, v = 0x000000AA
+      high: [2] n =  7, v = 0x00000055

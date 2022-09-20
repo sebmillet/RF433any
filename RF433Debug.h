@@ -23,17 +23,21 @@
 
 #define dbg(a) \
     { static const char tmp[] PROGMEM = {a}; \
-      dbgfunc(__FILE__, __LINE__, tmp); \
+      constexpr short unsigned l = strlen(a); \
+      dbgfunc(__FILE__, __LINE__, l, tmp); \
     }
 
 #define dbgf(a, ...) \
     { static const char tmp[] PROGMEM = {a}; \
-      dbgffunc(__FILE__, __LINE__, tmp, __VA_ARGS__); \
+      constexpr short unsigned l = strlen(a); \
+      dbgffunc(__FILE__, __LINE__, l, tmp, __VA_ARGS__); \
     }
 
-void dbgfunc(const char* file, long int line, const char *msg);
-void dbgffunc(const char* file, long int line, const char *format, ...)
-     __attribute__((format(printf, 3, 4)));
+void dbgfunc(const char* file, long int line, short unsigned msg_len,
+        const char *msg);
+void dbgffunc(const char* file, long int line, short unsigned format_len,
+        const char *format, ...)
+        __attribute__((format(printf, 4, 5)));
 
 #endif // _RF433DEBUG_H
 
