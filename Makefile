@@ -7,6 +7,7 @@ clean:
 	make -C examples/04_react_on_code/ $@
 	make -C examples/05_callback/ $@
 	make -C extras/testplan/test/ $@
+	make -C extras/testplan/simul/ $@
 
 mrproper:
 	make -C examples/01_main/ $@
@@ -15,4 +16,5 @@ mrproper:
 	make -C examples/04_react_on_code/ $@
 	make -C examples/05_callback/ $@
 	make -C extras/testplan/test/ $@
+	make -C extras/testplan/simul/ $@
 

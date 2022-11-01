@@ -1,0 +1,19 @@
+
+-----CODE START-----
+// [WRITE THE DEVICE NAME HERE]
+rf.register_Receiver(
+	RFMOD_TRIBIT, // mod
+	29696, // initseq
+	4224, // lo_prefix
+	1488, // hi_prefix
+	0, // first_lo_ign
+	352, // lo_short
+	720, // lo_long
+	0, // hi_short (0 => take lo_short)
+	0, // hi_long  (0 => take lo_long)
+	704, // lo_last
+	7808, // sep
+	39  // nb_bits
+);
+-----CODE END-----
+
