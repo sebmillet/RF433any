@@ -40,7 +40,7 @@ extern "C" char* sbrk(int incr);
 extern char *__brkval;
 #endif  // __arm__
 
-static fatal(const char* file, long int line, short unsigned len) {
+static void fatal(const char* file, long int line, short unsigned len) {
     Serial.print(newline);
     Serial.print(file);
     Serial.print(newline);
