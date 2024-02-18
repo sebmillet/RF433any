@@ -37,6 +37,7 @@ READSPEED=
 RECORDFILE=
 
 UPLOAD="no"
+REMOVE="no"
 VERBOSE="no"
 CATUSB="no"
 STTY="no"
@@ -71,6 +72,7 @@ function usage {
     echo "  -V --version    Output version information and quit"
     echo "  -v --verbose    Be more talkative"
     echo "  -u --upload     Upload compiled code into Arduino"
+    echo "  -R --remove     Remove /tmp/arduino-core-cache and ./buid"
     echo "  -b --board      Board, either 'uno' or 'nano'"
     echo "  -p --port       Port, for ex. '/dev/ttyUSB0'"
     echo "  -s --speed      Upload speed, for ex. 115200"
@@ -100,7 +102,7 @@ function version {
     exit
 }
 
-OPTS=$(getopt -o hVvub:p:s:B:d:crnt: --long help,version,verbose,upload,board:,port:,speed:,fqbn:,builddir:,catusb,stty,no-color,recordusb,nocompile,readspeed:,recordfile:,testplan: -n 'am' -- "$@")
+OPTS=$(getopt -o hVvuRb:p:s:B:d:crnt: --long help,version,verbose,upload,remove,board:,port:,speed:,fqbn:,builddir:,catusb,stty,no-color,recordusb,nocompile,readspeed:,recordfile:,testplan: -n 'am' -- "$@")
 
 eval set -- "$OPTS"
 
@@ -110,6 +112,7 @@ while true; do
     -V | --version )    version; shift ;;
     -v | --verbose )    VERBOSE="yes"; shift ;;
     -u | --upload )     UPLOAD="yes"; shift ;;
+    -R | --remove )     REMOVE="yes"; shift ;;
     -b | --board )      BOARD="$2"; shift 2 ;;
     -p | --port )       PORT="$2"; shift 2 ;;
     -s | --speed )      SPEED="$2"; shift 2 ;;
@@ -258,6 +261,7 @@ if [ "${VERBOSE}" == "yes" ]; then
     echo "Speed:       ${SPEED}"
     echo "Fqbn:        ${FQBN}"
     echo "Upload:      ${UPLOAD}"
+    echo "Remove:      ${REMOVE}"
     echo "Catusb:      ${CATUSB}"
     echo "Recordusb:   ${RECORDUSB}"
     echo "Record file: ${RECORDFILE}"
@@ -267,6 +271,10 @@ if [ "${VERBOSE}" == "yes" ]; then
 fi
 
 set -e
+
+if [ "${REMOVE}" == "yes" ]; then
+    rm -rf /tmp/arduino-core-cache
+fi
 
 if [ "${COMPILE}" == "yes" ]; then
     echo "-- Compile"

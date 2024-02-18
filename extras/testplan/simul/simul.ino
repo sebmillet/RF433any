@@ -27,6 +27,7 @@
 #define PIN_RFINPUT  2
 
 #include "RF433any.h"
+
 #include "RF433Serial.h"
 #include <Arduino.h>
 
@@ -91,6 +92,8 @@ void read_simulated_timings_from_usb() {
         if (!strlen(buffer))
             continue;
 
+        dbgf("==READ LINE [%s]", buffer);
+
         char *p = buffer;
         while (*p != ',' && *p != '\0')
             ++p;
@@ -140,10 +143,10 @@ void output_decoder(Decoder *pdec) {
 #endif
 
 const char *encoding_names[] = {
-    "RFMOD_TRIBIT",          // T
-    "RFMOD_TRIBIT_INVERTED", // N
-    "RFMOD_MANCHESTER",      // M
-    "<unmanaged encoding>"   // Anything else
+    "R",          // T
+    "R", // N
+    "R",      // M
+    "<"   // Anything else
 };
 
 const char *id_letter_to_encoding_name(char c) {

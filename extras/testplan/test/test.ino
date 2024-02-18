@@ -138,6 +138,51 @@ void output_decoder(Decoder *pdec) {
 }
 #endif
 
+const char *encoding_names[] = {
+    "RFMOD_TRIBIT",          // T
+    "RFMOD_TRIBIT_INVERTED", // N
+    "RFMOD_MANCHESTER",      // M
+    "<unmanaged encoding>"   // Anything else
+};
+
+const char *id_letter_to_encoding_name(char c) {
+    if (c == 'T')
+        return encoding_names[0];
+    else if (c == 'N')
+        return encoding_names[1];
+    else if (c == 'M')
+        return encoding_names[2];
+
+    return encoding_names[3];
+}
+
+void output_timings(Decoder *pdec, byte nb_bits) {
+    TimingsExt tsext;
+    if (!pdec)
+        return;
+    pdec->get_tsext(&tsext);
+
+    const char *enc_name = id_letter_to_encoding_name(pdec->get_id_letter());
+
+    dbg("\n-----CODE START-----");
+    dbg("// [WRITE THE DEVICE NAME HERE]\n"
+            "rf.register_Receiver(");
+    dbgf("\t%s, // mod", enc_name);
+    dbgf("\t%u, // initseq", tsext.initseq);
+    dbgf("\t%u, // lo_prefix", tsext.first_low);
+    dbgf("\t%u, // hi_prefix", tsext.first_high);
+    dbgf("\t%u, // first_lo_ign", tsext.first_low_ignored);
+    dbgf("\t%u, // lo_short", tsext.low_short);
+    dbgf("\t%u, // lo_long", tsext.low_long);
+    dbgf("\t%u, // hi_short (0 => take lo_short)", tsext.high_short);
+    dbgf("\t%u, // hi_long  (0 => take lo_long)", tsext.high_long);
+    dbgf("\t%u, // lo_last", tsext.last_low);
+    dbgf("\t%u, // sep", tsext.sep);
+    dbgf("\t%u  // nb_bits", nb_bits);
+    dbg(");");
+    dbg("-----CODE END-----\n");
+}
+
 void loop() {
     if (sim_int_count >= sim_timings_count)
         read_simulated_timings_from_usb();
@@ -176,6 +221,10 @@ void loop() {
     if (pdec) {
 #ifdef RF433ANY_DBG_DECODER
         pdec->dbg_decoder(2);
+//        if (pdec) {
+//            int nb_bits = pdec->get_nb_bits();
+//            output_timings(pdec, nb_bits);
+//        }
 #endif
 #if RF433ANY_TESTPLAN == 5
         output_decoder(pdec);

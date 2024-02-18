@@ -24,7 +24,7 @@ if [ "${INP_FILE}" == "" ]; then
     exit 1
 fi
 
-./am2 -t 3 simul.ino -u
+./am2 -R -t 4 simul.ino -u
 stty -F "${PORT}" -hupcl -echo 115200
 cat "${PORT}" &
 

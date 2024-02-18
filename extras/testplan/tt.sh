@@ -44,7 +44,7 @@ for ((i=START; i<=STOP; i++)); do
 
     echo "== ROUND $i"
 
-    testplan/test/am2 testplan/test/test.ino -u --stty -t "${i}"
+    testplan/test/am2 -R testplan/test/test.ino -u --stty -t "${i}"
 
     sleep 2
 
